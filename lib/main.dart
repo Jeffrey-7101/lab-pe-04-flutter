@@ -1,21 +1,43 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
-import 'views/home/home_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(const MyApp());
+import 'firebase_options.dart';   
+import 'viewmodels/login_viewmodel.dart';
+import 'views/auth/login_screen.dart';
+import 'views/home/home_screen.dart';
+import 'views/auth/register_screen.dart';
+import 'views/profile/profile_screen.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Invernadero IoT',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: 'Roboto',
+    return ChangeNotifierProvider(
+      create: (_) => LoginViewModel(),
+      child: MaterialApp(
+        title: 'Invernadero IoT',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+          fontFamily: 'Roboto',
+        ),
+        initialRoute: '/home',
+        routes: {
+          '/login': (_) => LoginScreen(),
+          '/home':  (_) => const HomeScreen(),
+          '/register': (_) => const RegisterScreen(),
+          '/profile': (_) => const ProfileScreen(),
+        },
       ),
-      home: const HomeScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

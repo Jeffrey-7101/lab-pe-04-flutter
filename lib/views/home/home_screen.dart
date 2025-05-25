@@ -1,4 +1,3 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,7 +10,6 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        // degradado de fondo
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
@@ -23,7 +21,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icono o logo
               const Icon(
                 Icons.eco,
                 size: 100,
@@ -31,7 +28,6 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Título
               const Text(
                 'Bienvenido a',
                 style: TextStyle(
@@ -49,7 +45,6 @@ class HomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-              // Descripción breve
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
@@ -63,7 +58,6 @@ class HomeScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 40),
-              // Botón para avanzar
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding:
@@ -73,8 +67,7 @@ class HomeScreen extends StatelessWidget {
                   backgroundColor: Colors.white,
                 ),
                 onPressed: () {
-                  // TODO: Navegar a la pantalla de datos / dashboard
-                  // Navigator.pushNamed(context, '/dashboard');
+                  Navigator.pushNamed(context, '/login');
                 },
                 child: Text(
                   'Comenzar',

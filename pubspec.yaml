@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_auth: ^5.5.4
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:

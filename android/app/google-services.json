@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "995192202329",
+    "project_id": "invernadero-iot-dfa2f",
+    "storage_bucket": "invernadero-iot-dfa2f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995192202329:android:1970f1731d25d16aae7d48",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ0ue_rxVL12nU5B995Gb6wCGqXVS0BB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
