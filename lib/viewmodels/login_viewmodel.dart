@@ -17,7 +17,8 @@ class LoginViewModel extends ChangeNotifier {
     } catch (_) {
       error = 'Error inesperado';
     }
-    isLoading = false; notifyListeners();
+    isLoading = false; 
+    notifyListeners();
     return null;
   }
 
@@ -31,7 +32,8 @@ class LoginViewModel extends ChangeNotifier {
     } catch (_) {
       error = 'Error inesperado';
     }
-    isLoading = false; notifyListeners();
+    isLoading = false; 
+    notifyListeners();
     return null;
   }
 }

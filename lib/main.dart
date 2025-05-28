@@ -10,7 +10,7 @@ import 'views/auth/login_screen.dart';
 import 'views/auth/register_screen.dart';
 import 'views/home/home_screen.dart';
 import 'views/profile/profile_screen.dart';
-import 'views/dashboard/dashboard_screen.dart';
+import 'views/statistics/statistics_screen.dart';
 import 'views/notifications/notifications_screen.dart';
 import 'views/devices/device_screen.dart';
 import 'views/sensor/sensors_screen.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           fontFamily: 'Roboto',
         ),
-        initialRoute: '/login', // o '/home' si ya tienes sesión guardada
+        initialRoute: '/login',
         routes: {
           '/login':         (_) => const LoginScreen(),
           '/register':      (_) => const RegisterScreen(),
@@ -53,9 +53,7 @@ class MyApp extends StatelessWidget {
           '/dashboard':     (_) => const DashboardScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/devices':       (_) => const DevicesScreen(),
-          '/sensors': (_) => const SensorsScreen(deviceId: 'dev1'), // Temporal
-
-
+          '/sensors':       (_) => const SensorsScreen(deviceId: 'dev1'),
         },
       ),
     );

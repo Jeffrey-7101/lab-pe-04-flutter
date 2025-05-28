@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodels/notifications_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
-import '../dashboard/dashboard_screen.dart';
+import '../statistics/statistics_screen.dart';
 import '../home/home_screen.dart';
+import '../devices/device_screen.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -73,13 +74,13 @@ class NotificationsScreen extends StatelessWidget {
             case 0:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                MaterialPageRoute(builder: (_) => const DevicesScreen()),
               );
               break;
             case 1:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => const DashboardScreen()),
               );
               break;
             case 2:

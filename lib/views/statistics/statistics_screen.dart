@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../devices/device_screen.dart';
 import '../widgets/bottom_navbar.dart';
-import '../home/home_screen.dart';
 import '../notifications/notifications_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -65,7 +64,7 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
+        currentIndex: 1,
         onTap: (idx) {
           switch (idx) {
             case 0:
