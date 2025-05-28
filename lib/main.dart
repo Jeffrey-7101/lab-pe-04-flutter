@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'viewmodels/login_viewmodel.dart';
 import 'viewmodels/notifications_viewmodel.dart';
 import 'viewmodels/device_viewmodel.dart';
+import 'viewmodels/sensor_chart_viewmodel.dart';
 import 'views/auth/login_screen.dart';
 import 'views/auth/register_screen.dart';
 import 'views/home/home_screen.dart';
