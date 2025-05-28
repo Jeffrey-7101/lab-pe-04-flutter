@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../devices/device_screen.dart';
 import '../widgets/bottom_navbar.dart';
-// import '../home/home_screen.dart';
 import '../notifications/notifications_screen.dart';
 import 'sensor_chart_screen.dart';
 import '../../models/sensor.dart';
