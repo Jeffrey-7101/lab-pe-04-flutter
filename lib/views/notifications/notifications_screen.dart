@@ -83,7 +83,6 @@ class NotificationsScreen extends StatelessWidget {
               );
               break;
             case 2:
-              // ya estamos aquí
               break;
           }
         },

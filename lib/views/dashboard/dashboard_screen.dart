@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../devices/device_screen.dart';
 import '../widgets/bottom_navbar.dart';
 import '../home/home_screen.dart';
 import '../notifications/notifications_screen.dart';
@@ -68,12 +69,12 @@ class DashboardScreen extends StatelessWidget {
         onTap: (idx) {
           switch (idx) {
             case 0:
-              break;
-            case 1:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => const DevicesScreen()),
               );
+              break;
+            case 1:
               break;
             case 2:
               Navigator.pushReplacement(
