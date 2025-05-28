@@ -13,6 +13,8 @@ import 'views/profile/profile_screen.dart';
 import 'views/dashboard/dashboard_screen.dart';
 import 'views/notifications/notifications_screen.dart';
 import 'views/devices/device_screen.dart';
+import 'views/sensor/sensors_screen.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +53,9 @@ class MyApp extends StatelessWidget {
           '/dashboard':     (_) => const DashboardScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/devices':       (_) => const DevicesScreen(),
+          '/sensors': (_) => const SensorsScreen(deviceId: 'dev1'), // Temporal
+
+
         },
       ),
     );

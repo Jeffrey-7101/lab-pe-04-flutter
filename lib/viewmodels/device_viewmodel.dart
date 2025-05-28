@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/device_item.dart';
+import '../models/sensor.dart';
 
 class DevicesViewModel extends ChangeNotifier {
   List<DeviceItem> _devices = [];
@@ -12,38 +13,54 @@ class DevicesViewModel extends ChangeNotifier {
   Future<void> loadDevices() async {
     await Future.delayed(const Duration(seconds: 1));
     _devices = [
-      const DeviceItem(
+      DeviceItem(
         id: 'dev1',
         name: 'Invernadero Principal',
         isOnline: true,
         lastSeen: 'hace 2 min',
         icon: Icons.eco,
+        sensors: [
+          Sensor(
+            type: SensorType.humidity,
+            value: 60.0,
+            minValue: 40,
+            maxValue: 70,
+          ),
+          Sensor(
+            type: SensorType.temperature,
+            value: 55.0,
+            minValue: 20,
+            maxValue: 54,
+          ),
+        ],
       ),
-      const DeviceItem(
+      DeviceItem(
         id: 'dev2',
         name: 'Estación Secundaria',
         isOnline: false,
         lastSeen: 'hace 1 h',
+        sensors: [
+          Sensor(
+            type: SensorType.humidity,
+            value: 30.0,
+            minValue: 40,
+            maxValue: 70,
+          ),
+        ],
       ),
-      const DeviceItem(
+      DeviceItem(
         id: 'dev3',
         name: 'Sensor Externo',
         isOnline: true,
         lastSeen: 'hace 30 s',
         icon: Icons.sensors,
+        sensors: [],
       ),
     ];
     notifyListeners();
   }
 
-  Future<void> refresh() async {
-    await loadDevices();
-  }
-
-  List<DeviceItem> search(String query) {
-    if (query.isEmpty) return _devices;
-    return _devices
-        .where((d) => d.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+  DeviceItem? getDeviceById(String id) {
+    return _devices.firstWhere((d) => d.id == id, orElse: () => _devices[0]);
   }
 }
