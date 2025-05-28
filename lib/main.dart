@@ -53,8 +53,6 @@ class MyApp extends StatelessWidget {
           '/dashboard':     (_) => const DashboardScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/devices':       (_) => const DevicesScreen(),
-          '/sensors': (_) => const SensorsScreen(deviceId: 'dev1'), // Temporal
-
 
         },
       ),

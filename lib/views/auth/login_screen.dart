@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       final vm = context.read<LoginViewModel>();
                       vm.login(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          Navigator.pushReplacementNamed(context, '/sensors');
+                          Navigator.pushReplacementNamed(context, '/devices');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(vm.error ?? 'Error al iniciar sesión')),

@@ -5,6 +5,7 @@ import '../../viewmodels/device_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../notifications/notifications_screen.dart';
+import '../sensor/sensors_screen.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});
@@ -53,6 +54,14 @@ class DevicesScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SensorsScreen(deviceId: d.id),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
