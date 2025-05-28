@@ -46,7 +46,7 @@ class MonitoringScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               ViewSwitcher(
-                isMonitoring: false,
+                isMonitoring: true,
                 onMonitoringTap: () {
                   
                 },
