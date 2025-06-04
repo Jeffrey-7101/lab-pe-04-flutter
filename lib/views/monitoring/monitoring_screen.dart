@@ -33,12 +33,6 @@ class MonitoringScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: const Text('Monitoreo en tiempo real'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-      ),
       extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
