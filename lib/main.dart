@@ -15,7 +15,7 @@ import 'views/notifications/notifications_screen.dart';
 import 'views/devices/device_screen.dart';
 import 'views/sensor/sensors_screen.dart';
 import 'views/post_view.dart';
-import 'viewmodels/post_viewmodel.dart'
+import 'viewmodels/post_viewmodel.dart';
 
 
 Future<void> main() async {
