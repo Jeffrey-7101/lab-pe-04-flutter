@@ -131,15 +131,15 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => SensorChartScreen(
-              sensorType: metric.type,
-            ),
-          ),
-        );
-      },
+      // onTap: () {        Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (_) => SensorChartScreen(
+      //         sensorType: metric.type,
+      //       ),
+      //     ),
+      //   );
+      // },
       child: Card(
         color: Colors.white.withOpacity(0.9),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

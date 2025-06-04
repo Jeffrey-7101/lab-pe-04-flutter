@@ -4,8 +4,8 @@ class Sensor {
   final SensorType type;
   double value;
   DateTime timestamp;
-  final double maxValue;
-  final double minValue;
+  double maxValue;
+  double minValue;
 
   Sensor({
     required this.type,

@@ -8,7 +8,11 @@ import '../statistics/statistics_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../widgets/view_switcher.dart';
 import '../monitoring/monitoring_screen.dart';
+import '../config_sensors/EditHumidityScreen.dart';
+import '../config_sensors/EditTemperatureScreen.dart';
 
+// import '../config_sensors/EditHumidityScreen.dart';
+// import '../config_sensors/EditTemperatureScreen.dart';
 class SensorsScreen extends StatelessWidget {
   final String deviceId;
 
@@ -44,7 +48,7 @@ class SensorsScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 16),
-               ViewSwitcher(
+              ViewSwitcher(
                 isMonitoring: false,
                 onMonitoringTap: () {
                   Navigator.pushReplacement(
@@ -54,15 +58,11 @@ class SensorsScreen extends StatelessWidget {
                     ),
                   );
                 },
-                onSensorsTap: (){
-                  //ya no hace nada
-                }
-               ),
-              const Icon(
-                Icons.sensors,
-                size: 80,
-                color: Colors.white,
+                onSensorsTap: () {
+                  // Ya estás en sensores
+                },
               ),
+              const Icon(Icons.sensors, size: 80, color: Colors.white),
               const SizedBox(height: 12),
               Text(
                 device.name,
@@ -84,14 +84,17 @@ class SensorsScreen extends StatelessWidget {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                   ),
                   child: ListView.builder(
                     itemCount: device.sensors.length,
                     itemBuilder: (context, index) {
                       final sensor = device.sensors[index];
+
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
@@ -118,10 +121,13 @@ class SensorsScreen extends StatelessWidget {
                                 ? 'Humedad'
                                 : 'Temperatura',
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                           subtitle: Text(
-                              'Valor: ${sensor.value} ${sensor.type}'),
+                            'Valor: ${sensor.value} ${sensor.type}',
+                          ),
                           trailing: Text(
                             sensor.status,
                             style: TextStyle(
@@ -131,6 +137,25 @@ class SensorsScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          onTap: () {
+                            if (sensor.type == SensorType.humidity) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditHumidityScreen(deviceId: deviceId),
+                                ),
+                              );
+                            } else if (sensor.type == SensorType.temperature) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditTemperatureScreen(deviceId: deviceId),
+                                ),
+                              );
+                            }
+                          },
                         ),
                       );
                     },
@@ -146,7 +171,7 @@ class SensorsScreen extends StatelessWidget {
         onTap: (idx) {
           switch (idx) {
             case 0:
-              // Ya estamos aquí
+              // Ya estás aquí
               break;
             case 1:
               Navigator.pushReplacement(

@@ -8,6 +8,8 @@ import '../notifications/notifications_screen.dart';
 import '../devices/device_screen.dart';
 import '../widgets/view_switcher.dart';
 import '../sensor/sensors_screen.dart';
+import '../statistics/sensor_chart_screen.dart';
+import '../../models/sensor.dart';
 
 class MonitoringScreen extends StatelessWidget {
   final String deviceId;
@@ -47,23 +49,17 @@ class MonitoringScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ViewSwitcher(
                 isMonitoring: true,
-                onMonitoringTap: () {
-                  
-                },
-                onSensorsTap: (){
+                onMonitoringTap: () {},
+                onSensorsTap: () {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (_) => SensorsScreen(deviceId: deviceId),
                     ),
                   );
-                }
-               ),
-              const Icon(
-                Icons.analytics,
-                size: 80,
-                color: Colors.white,
+                },
               ),
+              const Icon(Icons.analytics, size: 80, color: Colors.white),
               const SizedBox(height: 12),
               Text(
                 'Monitoreo en tiempo real',
@@ -83,20 +79,46 @@ class MonitoringScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Text(
-                    '📈 Gráfico en tiempo real',
-                    style: TextStyle(fontSize: 18, color: Colors.black54),
+              // Container(
+              //   margin: const EdgeInsets.symmetric(horizontal: 16),
+              //   height: 200,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white.withOpacity(0.9),
+              //     borderRadius: BorderRadius.circular(16),
+              //   ),
+              //   child: const Center(
+              //     child: Text(
+              //       '📈 Gráfico en tiempo real',
+              //       style: TextStyle(fontSize: 18, color: Colors.black54),
+              //     ),
+              //   ),
+              // ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          SensorChartScreen(sensorType: SensorType.temperature),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '📈 Gráfico en tiempo real',
+                      style: TextStyle(fontSize: 18, color: Colors.black54),
+                    ),
                   ),
                 ),
               ),
+
               const SizedBox(height: 24),
 
               Padding(
@@ -108,6 +130,7 @@ class MonitoringScreen extends StatelessWidget {
                       value: '23°C',
                       icon: Icons.thermostat_outlined,
                       color: Colors.red,
+                      sensorType: SensorType.temperature,
                     ),
                     const SizedBox(width: 16),
                     _MetricCard(
@@ -115,6 +138,7 @@ class MonitoringScreen extends StatelessWidget {
                       value: '55%',
                       icon: Icons.water_drop_outlined,
                       color: Colors.blue,
+                      sensorType: SensorType.humidity,
                     ),
                   ],
                 ),
@@ -157,37 +181,51 @@ class _MetricCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
+  final SensorType sensorType;
 
   const _MetricCard({
     required this.label,
     required this.value,
     required this.icon,
     required this.color,
+    required this.sensorType,
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.white.withOpacity(0.9),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Icon(icon, size: 32, color: color),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SensorChartScreen(sensorType: sensorType),
+            ),
+          );
+        },
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color: Colors.white.withOpacity(0.9),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Icon(icon, size: 32, color: color),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(label),
-            ],
+                const SizedBox(height: 4),
+                Text(label),
+              ],
+            ),
           ),
         ),
       ),

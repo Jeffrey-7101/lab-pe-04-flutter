@@ -6,6 +6,7 @@ import '../widgets/bottom_navbar.dart';
 import '../statistics/statistics_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../sensor/sensors_screen.dart';
+import '../monitoring/monitoring_screen.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});
@@ -37,7 +38,7 @@ class DevicesScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SensorsScreen(deviceId: d.id),
+                        builder: (_) => MonitoringScreen(deviceId: d.id),
                       ),
                     );
                   },

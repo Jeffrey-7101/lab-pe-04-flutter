@@ -63,4 +63,18 @@ class DevicesViewModel extends ChangeNotifier {
   DeviceItem? getDeviceById(String id) {
     return _devices.firstWhere((d) => d.id == id, orElse: () => _devices[0]);
   }
+
+  void updateSensorLimits(
+    String deviceId,
+    SensorType type,
+    double min,
+    double max,
+  ) {
+    final device = _devices.firstWhere((d) => d.id == deviceId);
+    final sensor = device.sensors.firstWhere((s) => s.type == type);
+
+    sensor.minValue = min;
+    sensor.maxValue = max;
+    notifyListeners();
+  }
 }
