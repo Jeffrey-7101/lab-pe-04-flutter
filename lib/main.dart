@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           '/devices':       (_) => const DevicesScreen(),
           // Nota: en el route '/sensors' pasamos un valor por defecto, pero 
           // normalmente navegarías con `Navigator.pushNamed(context, '/sensors', arguments: deviceId)`
-          '/sensors':       (_) => const SensorsScreen(deviceId: 'dev1'),
+          // '/sensors':       (_) => const SensorsScreen(deviceId: 'dev1'),
         },
       ),
     );
