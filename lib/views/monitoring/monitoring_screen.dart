@@ -32,6 +32,14 @@ class MonitoringScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: const Text('Monitoreo en tiempo real'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -44,12 +52,14 @@ class MonitoringScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
               ViewSwitcher(
                 isMonitoring: true,
-                onMonitoringTap: () {},
+                onMonitoringTap: () {
+                  // Ya estamos aquí
+                },
                 onSensorsTap: () {
                   Navigator.pushReplacement(
                     context,
@@ -59,47 +69,29 @@ class MonitoringScreen extends StatelessWidget {
                   );
                 },
               ),
+
+              const SizedBox(height: 16),
+
               const Icon(Icons.analytics, size: 80, color: Colors.white),
               const SizedBox(height: 12),
               Text(
-                'Monitoreo en tiempo real',
+                device.name,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                device.name,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 16,
                 ),
               ),
               const SizedBox(height: 24),
 
-              // Container(
-              //   margin: const EdgeInsets.symmetric(horizontal: 16),
-              //   height: 200,
-              //   decoration: BoxDecoration(
-              //     color: Colors.white.withOpacity(0.9),
-              //     borderRadius: BorderRadius.circular(16),
-              //   ),
-              //   child: const Center(
-              //     child: Text(
-              //       '📈 Gráfico en tiempo real',
-              //       style: TextStyle(fontSize: 18, color: Colors.black54),
-              //     ),
-              //   ),
-              // ),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          SensorChartScreen(sensorType: SensorType.temperature),
+                      builder: (_) => SensorChartScreen(
+                        sensorType: SensorType.temperature,
+                      ),
                     ),
                   );
                 },
@@ -199,7 +191,8 @@ class _MetricCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => SensorChartScreen(sensorType: sensorType),
+              builder: (_) =>
+                  SensorChartScreen(sensorType: sensorType),
             ),
           );
         },
