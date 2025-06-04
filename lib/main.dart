@@ -14,6 +14,8 @@ import 'views/statistics/statistics_screen.dart';
 import 'views/notifications/notifications_screen.dart';
 import 'views/devices/device_screen.dart';
 import 'views/sensor/sensors_screen.dart';
+import 'views/post_view.dart';
+import 'viewmodels/post_viewmodel.dart'
 
 
 Future<void> main() async {
@@ -36,6 +38,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => NotificationsViewModel()),
         ChangeNotifierProvider(create: (_) => DevicesViewModel()),
+        ChangeNotifierProvider(create: (_) => PostViewModel()),
+
       ],
       child: MaterialApp(
         title: 'Invernadero IoT',
@@ -44,7 +48,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           fontFamily: 'Roboto',
         ),
-        initialRoute: '/login',
+        initialRoute: '/posts',
         routes: {
           '/login':         (_) => const LoginScreen(),
           '/register':      (_) => const RegisterScreen(),
@@ -53,7 +57,9 @@ class MyApp extends StatelessWidget {
           '/dashboard':     (_) => const DashboardScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/devices':       (_) => const DevicesScreen(),
-          '/sensors':       (_) => const SensorsScreen(deviceId: 'dev1'),
+          '/posts': (_) => const PostView(),
+
+          // '/sensors':       (_) => const SensorsScreen(deviceId: 'dev1'),
         },
       ),
     );
