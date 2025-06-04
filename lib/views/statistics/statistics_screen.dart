@@ -58,7 +58,7 @@ class DashboardScreen extends StatelessWidget {
                       SizedBox(height: 8),
                       Text(
                         'Toca para ver en tiempo real',
-                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
                     ],
                   ),
@@ -147,9 +147,9 @@ class _MetricCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(metric.icon, size: 32, color: Colors.green.shade700),
-              const Spacer(),
+              Icon(metric.icon, size: 20, color: Colors.green.shade700),
               Text(
                 metric.value,
                 style: const TextStyle(

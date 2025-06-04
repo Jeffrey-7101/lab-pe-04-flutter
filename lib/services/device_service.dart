@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-// import '../models/device.dart';
 import '../models/device_item.dart';
 import '../models/sensor.dart';
 
@@ -15,7 +14,6 @@ class DeviceService {
     return _devices;
   }
 
-  // Simula un stream de datos de sensores en tiempo real
   Stream<List<Sensor>> getSensorData(String deviceId) {
     final random = Random();
     return Stream.periodic(const Duration(seconds: 1), (_) {

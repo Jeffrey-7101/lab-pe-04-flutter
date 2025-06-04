@@ -3,7 +3,6 @@ import 'dart:math';
 import '../models/sensor.dart';
 
 class SensorService {
-  // Simula un stream de datos de sensores en tiempo real
   Stream<List<Sensor>> getSensorData() {
     final random = Random();
     return Stream.periodic(const Duration(seconds: 1), (_) {
