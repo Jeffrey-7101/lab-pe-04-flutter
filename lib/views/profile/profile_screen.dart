@@ -110,8 +110,7 @@ class ProfileScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
-                  ),
-                  onPressed: () async {
+                  ),                  onPressed: () async {
                     // Mostrar diálogo de confirmación
                     final confirm = await showDialog<bool>(
                       context: context,
@@ -137,7 +136,11 @@ class ProfileScreen extends StatelessWidget {
                     if (confirm == true) {
                       await loginVM.logout();
                       if (context.mounted) {
-                        Navigator.pushReplacementNamed(context, '/login');
+                        // Limpiar completamente la pila de navegación y ir al login
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/login', 
+                          (route) => false // Esto elimina todas las rutas anteriores
+                        );
                       }
                     }
                   },

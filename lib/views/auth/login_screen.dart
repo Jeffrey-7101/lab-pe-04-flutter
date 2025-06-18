@@ -79,14 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
-                  ),
-                  onPressed: () {
+                  ),                  onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       print('Intentando iniciar sesión con: ${_emailCtrl.text}');
                       final vm = context.read<LoginViewModel>();
                       vm.login(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          // el AuthWrapper cambiará automáticamente la vista
+                          // Ya no necesitamos navegar manualmente porque el AuthWrapper se encargará de esto
+                          // cuando el estado de autenticación cambie
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(vm.error ?? 'Error al iniciar sesión')),
