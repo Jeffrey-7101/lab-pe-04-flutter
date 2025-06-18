@@ -6,7 +6,7 @@ class DeviceItem {
   final String name;
   final bool isOnline;
   final String lastSeen;
-  final IconData? icon;
+  final IconData icon;
   final List<Sensor> sensors;
 
   const DeviceItem({
@@ -14,7 +14,7 @@ class DeviceItem {
     required this.name,
     required this.isOnline,
     required this.lastSeen,
-    this.icon,
+    this.icon = Icons.sensors,  
     this.sensors = const [],
   });
 
@@ -29,7 +29,7 @@ class DeviceItem {
       name: json['name'] as String? ?? '',
       isOnline: json['isOnline'] as bool? ?? false,
       lastSeen: json['lastSeen'] as String? ?? '',
-      icon: _iconFromString(json['icon'] as String?),
+      icon: _iconFromString(json['icon'] as String?) ?? Icons.sensors,
       sensors: sensorsMap.entries
           .map(
             (e) => Sensor.fromJson(e.value as Map<dynamic, dynamic>),
