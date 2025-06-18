@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import '../devices/device_screen.dart';
-import '../widgets/bottom_navbar.dart';
 import '../widgets/user_profile_icon.dart';
 import '../profile/profile_screen.dart';
-import '../notifications/notifications_screen.dart';
 import 'sensor_chart_screen.dart';
 import '../../models/sensor.dart';
 
@@ -49,7 +46,8 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {                Navigator.push(
+              onTap: () {
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => SensorChartScreen(
@@ -104,27 +102,7 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 1,
-        onTap: (idx) {
-          switch (idx) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DevicesScreen()),
-              );
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
-              break;
-          }
-        },
-      ),
+      // Ya no necesitamos la barra de navegación inferior aquí
     );
   }
 }

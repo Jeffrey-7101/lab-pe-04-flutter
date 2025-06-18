@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/notifications_viewmodel.dart';
-import '../widgets/bottom_navbar.dart';
 import '../widgets/user_profile_icon.dart';
 import '../profile/profile_screen.dart';
-import '../statistics/statistics_screen.dart';
-import '../devices/device_screen.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -84,27 +81,6 @@ class NotificationsScreen extends StatelessWidget {
                 );
               },
             ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 2,
-        onTap: (idx) {
-          switch (idx) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DevicesScreen()),
-              );
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-              break;
-            case 2:
-              break;
-          }
-        },
-      ),
     );
   }
 }
