@@ -1,57 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import '../models/notification_item.dart';
 
 class NotificationsViewModel extends ChangeNotifier {
-  List<NotificationItem> _notifications = [];
+  final _ref = FirebaseDatabase.instance.ref('notifications');
+
+  StreamSubscription<DatabaseEvent>? _sub;
+  List<NotificationItem> _notifications = const <NotificationItem>[];
   List<NotificationItem> get notifications => _notifications;
 
   NotificationsViewModel() {
-    loadNotifications();
+    _listenNotifications();
   }
 
-  Future<void> loadNotifications() async {
-    await Future.delayed(const Duration(seconds: 1));
-    _notifications = [
-      const NotificationItem(
-        deviceName: 'Dispositivo 1',
-        message: 'Sensor 1 temperatura muy baja',
-        timeAgo: 'hace 1 h',
-        bgColor: Color(0xFFA6D8FF),
-        icon: Icons.thermostat_outlined,
-        iconColor: Colors.black,
-        deviceTextColor: Colors.brown,
-      ),
-      
-      const NotificationItem(
-        deviceName: 'Dispositivo 2',
-        message: 'Sensor 1 temperatura muy alta',
-        timeAgo: 'hace 23 m',
-        bgColor: Color(0xFFFFA6A6),
-        icon: Icons.thermostat_outlined,
-        iconColor: Colors.black,
-        deviceTextColor: Colors.cyan,
-      ),
+  void _listenNotifications() {
+    _sub = _ref.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
-      const NotificationItem(
-        deviceName: 'Dispositivo 3',
-        message: 'Sensor 2 demasiada humedad',
-        timeAgo: 'hace 1 d',
-        bgColor: Color(0xFF5772FF),
-        icon: Icons.water_drop_outlined,
-        iconColor: Colors.black,
-        deviceTextColor: Colors.lightGreen,
-      ),
+      _notifications = data == null
+          ? const <NotificationItem>[]
+          : data.values
+              .map((v) =>
+                  NotificationItem.fromJson(v as Map<dynamic, dynamic>))
+              .toList()
+            ..sort(
+              (a, b) => b.timeAgo.compareTo(a.timeAgo),
+            );
 
-      const NotificationItem(
-        deviceName: 'Dispositivo 4',
-        message: 'Sensor 1 poca humedad',
-        timeAgo: 'hace 56 s',
-        bgColor: Color(0xFFD6CFC7),
-        icon: Icons.water_drop_outlined,
-        iconColor: Colors.black,
-        deviceTextColor: Colors.blue,
-      ),
-    ];
-    notifyListeners();
+      notifyListeners();
+    }, onError: (e) => debugPrint('Notifications error: $e'));
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 }

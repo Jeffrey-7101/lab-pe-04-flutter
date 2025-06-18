@@ -49,7 +49,30 @@ class Sensor {
     }
   }
 
-  String getFormattedValue() {
-    return '${value.toStringAsFixed(1)} ${getUnit()}';
+  String getFormattedValue() =>
+      '${value.toStringAsFixed(1)} ${getUnit()}';
+
+  factory Sensor.fromJson(Map<dynamic, dynamic> json) {
+    return Sensor(
+      type: _parseType(json['type'] as String),
+      value: (json['value'] as num).toDouble(),
+      minValue: (json['minValue'] as num?)?.toDouble() ?? 0.0,
+      maxValue: (json['maxValue'] as num?)?.toDouble() ?? 100.0,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(
+        ((json['timestamp'] ?? 0) as int) * 1000,
+      ),
+    );
   }
+
+  Map<String, dynamic> toJson() => {
+        'type': type.name,
+        'value': value,
+        'minValue': minValue,
+        'maxValue': maxValue,
+        'timestamp': timestamp.millisecondsSinceEpoch ~/ 1000,
+      };
+
+  static SensorType _parseType(String raw) =>
+      SensorType.values.firstWhere((e) => e.name == raw,
+          orElse: () => SensorType.temperature);
 }

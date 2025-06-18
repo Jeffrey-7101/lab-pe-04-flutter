@@ -1,43 +1,70 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import '../models/sensor.dart';
-import '../services/sensor_service.dart';
 
 class SensorChartViewModel extends ChangeNotifier {
-  final SensorService _service = SensorService();
-  List<Sensor> sensors = [];
-  Map<SensorType, List<Sensor>> sensorHistory = {
-    SensorType.temperature: [],
-    SensorType.humidity: [],
-    SensorType.light: [],
-    SensorType.co2: [],
-  };
+  final _ref = FirebaseDatabase.instance.ref('sensors');
   final Duration historyWindow = const Duration(seconds: 30);
-  Stream<List<Sensor>>? _sensorStream;
-  StreamSubscription<List<Sensor>>? _subscription;
+
+  StreamSubscription<DatabaseEvent>? _sub;
+
+  List<Sensor> _sensors = const [];
+  List<Sensor> get sensors => List.unmodifiable(_sensors);
+
+  final Map<SensorType, List<Sensor>> sensorHistory = {
+    for (var t in SensorType.values) t: <Sensor>[],
+  };
 
   SensorChartViewModel() {
-    _initSensorStream();
+    _listenSensors();
   }
 
-  void _initSensorStream() {
-    _sensorStream = _service.getSensorData();
-    _subscription = _sensorStream!.listen((data) {
-      sensors = data;
+  void _listenSensors() {
+    _sub = _ref.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+
+      _sensors = _parseSensors(data);
+
       final now = DateTime.now();
-      for (var sensor in data) {
-        final list = sensorHistory[sensor.type]!;
-        list.add(sensor);
-        // Mantener solo los datos dentro de la ventana de tiempo
-        list.removeWhere((s) => now.difference(s.timestamp) > historyWindow);
+      for (var s in _sensors) {
+        final list = sensorHistory[s.type]!;
+        list.add(s);
+        list.removeWhere(
+          (old) => now.difference(old.timestamp) > historyWindow,
+        );
       }
+
       notifyListeners();
-    });
+    }, onError: (e) => debugPrint('Sensors error: $e'));
+  }
+
+  List<Sensor> _parseSensors(Map<dynamic, dynamic>? data) {
+    if (data == null) return const [];
+
+    final List<Sensor> out = [];
+
+    for (var entry in data.values) {
+      if (entry is Map && entry['type'] != null) {
+        out.add(Sensor.fromJson(entry));
+        continue;
+      }
+
+      if (entry is Map) {
+        for (var sub in entry.values) {
+          if (sub is Map && sub['type'] != null) {
+            out.add(Sensor.fromJson(sub));
+          }
+        }
+      }
+    }
+    return out;
   }
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _sub?.cancel();
     super.dispose();
   }
 }

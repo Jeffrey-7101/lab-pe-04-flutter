@@ -1,67 +1,52 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import '../models/device_item.dart';
 import '../models/sensor.dart';
 
 class DevicesViewModel extends ChangeNotifier {
+  final _ref = FirebaseDatabase.instance.ref('devices');
+
+  StreamSubscription<DatabaseEvent>? _sub;
   List<DeviceItem> _devices = [];
   List<DeviceItem> get devices => _devices;
 
   DevicesViewModel() {
-    loadDevices();
+    _listenDevices();
   }
 
-  Future<void> loadDevices() async {
-    await Future.delayed(const Duration(seconds: 1));
-    _devices = [
-      DeviceItem(
-        id: 'dev1',
-        name: 'Invernadero Principal',
-        isOnline: true,
-        lastSeen: 'hace 2 min',
-        icon: Icons.eco,
-        sensors: [
-          Sensor(
-            type: SensorType.humidity,
-            value: 60.0,
-            minValue: 40,
-            maxValue: 70,
-          ),
-          Sensor(
-            type: SensorType.temperature,
-            value: 55.0,
-            minValue: 20,
-            maxValue: 54,
-          ),
-        ],
-      ),
-      DeviceItem(
-        id: 'dev2',
-        name: 'Estación Secundaria',
+  void _listenDevices() {
+    _sub = _ref.onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+
+      _devices = data == null
+          ? []
+          : data.entries
+              .map((e) => DeviceItem.fromJson(
+                    e.key as String,
+                    e.value as Map<dynamic, dynamic>,
+                  ))
+              .toList();
+
+      notifyListeners();
+    }, onError: (e) => debugPrint('Devices error: $e'));
+  }
+
+  DeviceItem getDeviceById(String id) {
+    if (_devices.isEmpty) {
+      return const DeviceItem(
+        id: 'unknown',
+        name: 'Sin datos',
         isOnline: false,
-        lastSeen: 'hace 1 h',
-        sensors: [
-          Sensor(
-            type: SensorType.humidity,
-            value: 30.0,
-            minValue: 40,
-            maxValue: 70,
-          ),
-        ],
-      ),
-      DeviceItem(
-        id: 'dev3',
-        name: 'Sensor Externo',
-        isOnline: true,
-        lastSeen: 'hace 30 s',
-        icon: Icons.sensors,
+        lastSeen: '',
         sensors: [],
-      ),
-    ];
-    notifyListeners();
-  }
-
-  DeviceItem? getDeviceById(String id) {
-    return _devices.firstWhere((d) => d.id == id, orElse: () => _devices[0]);
+      );
+    }
+    return _devices.firstWhere(
+      (d) => d.id == id,
+      orElse: () => _devices[0],
+    );
   }
 
   void updateSensorLimits(
@@ -70,11 +55,29 @@ class DevicesViewModel extends ChangeNotifier {
     double min,
     double max,
   ) {
-    final device = _devices.firstWhere((d) => d.id == deviceId);
-    final sensor = device.sensors.firstWhere((s) => s.type == type);
+    final devIndex = _devices.indexWhere((d) => d.id == deviceId);
+    if (devIndex == -1) return;
 
-    sensor.minValue = min;
-    sensor.maxValue = max;
+    final sensorIndex =
+        _devices[devIndex].sensors.indexWhere((s) => s.type == type);
+    if (sensorIndex == -1) return;
+
+    _devices[devIndex].sensors[sensorIndex]
+      ..minValue = min
+      ..maxValue = max;
+
     notifyListeners();
+
+    _ref
+        .child(deviceId)
+        .child('sensors')
+        .child(type.name)
+        .update({'minValue': min, 'maxValue': max});
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 }

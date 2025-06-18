@@ -4,16 +4,6 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -52,6 +42,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '995192202329',
     projectId: 'invernadero-iot-dfa2f',
     storageBucket: 'invernadero-iot-dfa2f.firebasestorage.app',
+    databaseURL: 'https://invernadero-iot-dfa2f-default-rtdb.firebaseio.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -61,6 +52,7 @@ class DefaultFirebaseOptions {
     projectId: 'invernadero-iot-dfa2f',
     storageBucket: 'invernadero-iot-dfa2f.firebasestorage.app',
     iosBundleId: 'com.example.flutterApplication1',
+    databaseURL: 'https://invernadero-iot-dfa2f-default-rtdb.firebaseio.com',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
@@ -71,6 +63,7 @@ class DefaultFirebaseOptions {
     authDomain: 'invernadero-iot-dfa2f.firebaseapp.com',
     storageBucket: 'invernadero-iot-dfa2f.firebasestorage.app',
     measurementId: 'G-B09XX0PM33',
+    databaseURL: 'https://invernadero-iot-dfa2f-default-rtdb.firebaseio.com',
   );
 
 }
