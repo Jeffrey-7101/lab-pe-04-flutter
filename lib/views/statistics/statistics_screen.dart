@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../devices/device_screen.dart';
 import '../widgets/bottom_navbar.dart';
+import '../widgets/user_profile_icon.dart';
+import '../profile/profile_screen.dart';
 import '../notifications/notifications_screen.dart';
 import 'sensor_chart_screen.dart';
 import '../../models/sensor.dart';
@@ -25,6 +27,22 @@ class DashboardScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: UserProfileIcon(
+              size: 36.0,
+              backgroundColor: Colors.green.shade100,
+              iconColor: Colors.green.shade700,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

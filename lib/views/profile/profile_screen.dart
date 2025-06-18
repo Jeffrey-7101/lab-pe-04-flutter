@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../services/auth_service.dart';
-import '../auth/login_screen.dart';
+import 'package:provider/provider.dart';
+import '../../viewmodels/login_viewmodel.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,7 +9,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final email = user?.email ?? 'Usuario';
+    final loginVM = Provider.of<LoginViewModel>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -18,7 +18,10 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Perfil'),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Container(
         width: double.infinity,
@@ -37,17 +40,21 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Avatar
+                // Avatar de usuario
                 CircleAvatar(
-                  radius: 48,
-                  backgroundColor: Colors.white.withOpacity(0.9),
-                  child: Text(
-                    email.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 32,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  radius: 50,
+                  backgroundColor: Colors.white,
+                  child: user?.photoURL != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.network(
+                            user!.photoURL!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Icon(Icons.person, size: 60, color: Colors.green.shade700),
                 ),
                 const SizedBox(height: 16),
                 // Email
@@ -69,35 +76,122 @@ class ProfileScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                // Logout button
+
+                _InfoCard(
+                  icon: Icons.email,
+                  label: 'Email', 
+                  value: user?.email ?? 'No disponible'
+                ),
+                const SizedBox(height: 16),
+                _InfoCard(
+                  icon: Icons.perm_identity,
+                  label: 'UID',   
+                  value: user?.uid ?? 'No disponible'
+                ),
+                if (user?.phoneNumber != null) ...[
+                  const SizedBox(height: 16),
+                  _InfoCard(
+                    icon: Icons.phone,
+                    label: 'Teléfono', 
+                    value: user!.phoneNumber!
+                  ),
+                ],
+                
+                const Spacer(),
+                
+                // Botón de cerrar sesión
                 ElevatedButton.icon(
                   icon: const Icon(Icons.logout),
-                  label: const Text('Cerrar sesión'),
+                  label: const Text('Cerrar Sesión'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.9),
+                    backgroundColor: Colors.white,
                     foregroundColor: Colors.red.shade700,
-                    minimumSize: const Size.fromHeight(48),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                   onPressed: () async {
-                    await AuthService().signOut();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (_) => const LoginScreen(),
+                    // Mostrar diálogo de confirmación
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Cerrar Sesión'),
+                        content: const Text('¿Estás seguro que deseas cerrar sesión?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancelar'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text(
+                              'Cerrar Sesión',
+                              style: TextStyle(color: Colors.red.shade700),
+                            ),
+                          ),
+                        ],
                       ),
-                      (_) => false,
                     );
+                    
+                    if (confirm == true) {
+                      await loginVM.logout();
+                      if (context.mounted) {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      }
+                    }
                   },
                 ),
+                
+                const SizedBox(height: 16),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  
+  const _InfoCard({
+    required this.icon,
+    required this.label, 
+    required this.value
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white.withOpacity(0.9),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.green.shade700),
+            const SizedBox(width: 12),
+            Text(
+              '$label:',
+              style: TextStyle(
+                color: Colors.green.shade700,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

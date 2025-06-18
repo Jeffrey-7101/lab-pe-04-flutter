@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodels/notifications_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
+import '../widgets/user_profile_icon.dart';
+import '../profile/profile_screen.dart';
 import '../statistics/statistics_screen.dart';
-import '../home/home_screen.dart';
 import '../devices/device_screen.dart';
 import '../profile/profile_screen.dart';  // ← Importa tu ProfileScreen
 
@@ -24,15 +25,19 @@ class NotificationsScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: UserProfileIcon(
+              size: 36.0,
+              backgroundColor: Colors.green.shade100,
+              iconColor: Colors.green.shade700,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
+            ),
           ),
         ],
       ),
