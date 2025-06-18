@@ -86,6 +86,7 @@ class MonitoringScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => SensorChartScreen(
                         sensorType: SensorType.temperature,
+                        deviceId: deviceId,
                       ),
                     ),
                   );
@@ -119,6 +120,7 @@ class MonitoringScreen extends StatelessWidget {
                       icon: Icons.thermostat_outlined,
                       color: Colors.red,
                       sensorType: SensorType.temperature,
+                      deviceId: deviceId,
                     ),
                     const SizedBox(width: 16),
                     _MetricCard(
@@ -127,6 +129,7 @@ class MonitoringScreen extends StatelessWidget {
                       icon: Icons.water_drop_outlined,
                       color: Colors.blue,
                       sensorType: SensorType.humidity,
+                      deviceId: deviceId,
                     ),
                   ],
                 ),
@@ -170,6 +173,7 @@ class _MetricCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final SensorType sensorType;
+  final String deviceId;
 
   const _MetricCard({
     required this.label,
@@ -177,6 +181,7 @@ class _MetricCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.sensorType,
+    required this.deviceId,
   });
 
   @override
@@ -187,7 +192,7 @@ class _MetricCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => SensorChartScreen(sensorType: sensorType),
+              builder: (_) => SensorChartScreen(sensorType: sensorType, deviceId: deviceId),
             ),
           );
         },

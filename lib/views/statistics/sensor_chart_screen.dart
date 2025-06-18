@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import '../../models/sensor.dart';
 import '../../viewmodels/sensor_chart_viewmodel.dart';
+import '../../viewmodels/device_viewmodel.dart';
 
 class SensorChartScreen extends StatelessWidget {
+  /// Ahora opcional: si es null, elegimos el primero
+  final String? deviceId;
   final SensorType sensorType;
-  
+
   const SensorChartScreen({
-    super.key,
+    Key? key,
+    this.deviceId,
     required this.sensorType,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Si no recibimos deviceId, usamos el primero del VM
+    final vmDevices = context.read<DevicesViewModel>();
+    final actualDeviceId = deviceId ??
+        (vmDevices.devices.isNotEmpty
+            ? vmDevices.devices.first.id
+            : '');
+
     return ChangeNotifierProvider(
-      create: (_) => SensorChartViewModel(),
+      create: (_) => SensorChartViewModel(
+        deviceId: actualDeviceId,
+        sensorType: sensorType,
+      ),
       child: _SensorChartView(sensorType: sensorType),
     );
   }
@@ -24,12 +39,13 @@ class SensorChartScreen extends StatelessWidget {
 class _SensorChartView extends StatelessWidget {
   final SensorType sensorType;
 
-  const _SensorChartView({required this.sensorType});
+  const _SensorChartView({Key? key, required this.sensorType})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final vm = Provider.of<SensorChartViewModel>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_getLabel(sensorType)),
@@ -39,29 +55,24 @@ class _SensorChartView extends StatelessWidget {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+                  borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Gráfico en tiempo real',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
+                    Text('Gráfico en tiempo real',
+                        style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8),
-                    Text(
-                      _getLabel(sensorType),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(_getLabel(sensorType),
+                        style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 16),
                     _buildChart(context, vm),
                     const SizedBox(height: 16),
@@ -78,24 +89,22 @@ class _SensorChartView extends StatelessWidget {
     );
   }
 
-  Widget _buildChart(BuildContext context, SensorChartViewModel vm) {
-    final history = vm.sensorHistory[sensorType] ?? [];
-    
+  Widget _buildChart(
+      BuildContext context, SensorChartViewModel vm) {
+    final history = vm.history;
     if (history.isEmpty) {
       return const SizedBox(
         height: 300,
-        child: Center(child: Text('Esperando datos...')),
+        child: Center(child: Text('Esperando datos…')),
       );
     }
 
-    // Ventana de tiempo en segundos
-    final windowSeconds = vm.historyWindow.inSeconds.toDouble();
+    final windowSec = vm.historyWindow.inSeconds.toDouble();
     final now = DateTime.now();
-    
-    // Solo los datos dentro de la ventana
-    final visible = history.where((s) => 
-      now.difference(s.timestamp).inSeconds <= windowSeconds).toList();
-    
+    final visible = history
+        .where((s) =>
+            now.difference(s.timestamp).inSeconds <= windowSec)
+        .toList();
     if (visible.isEmpty) {
       return const SizedBox(
         height: 300,
@@ -103,10 +112,15 @@ class _SensorChartView extends StatelessWidget {
       );
     }
 
-    // Normaliza el eje X: 0 = inicio de la ventana, windowSeconds = ahora
-    final minY = visible.map((s) => s.value).reduce((a, b) => a < b ? a : b) - 2;
-    final maxY = visible.map((s) => s.value).reduce((a, b) => a > b ? a : b) + 2;
-    
+    final minY = visible
+            .map((s) => s.value)
+            .reduce((a, b) => a < b ? a : b) -
+        2;
+    final maxY = visible
+            .map((s) => s.value)
+            .reduce((a, b) => a > b ? a : b) +
+        2;
+
     return SizedBox(
       height: 300,
       child: LineChart(
@@ -114,79 +128,76 @@ class _SensorChartView extends StatelessWidget {
           minY: minY,
           maxY: maxY,
           minX: 0,
-          maxX: windowSeconds,
+          maxX: windowSec,
           lineBarsData: [
             LineChartBarData(
-              spots: [
-                for (var s in visible)
-                  FlSpot(
-                    windowSeconds - now.difference(s.timestamp).inSeconds.toDouble(),
-                    s.value,
-                  ),
-              ],
+              spots: visible.map((s) {
+                final x = windowSec -
+                    now
+                        .difference(s.timestamp)
+                        .inSeconds
+                        .toDouble();
+                return FlSpot(x, s.value);
+              }).toList(),
               isCurved: true,
-              color: _getChartColor(context, sensorType),
+              color: _getChartColor(sensorType),
               barWidth: 3,
               dotData: FlDotData(
                 show: true,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: 4,
-                    color: _getChartColor(context, sensorType),
-                    strokeWidth: 1.5,
-                    strokeColor: Colors.white,
-                  );
-                },
+                getDotPainter: (_, __, ___, ____) =>
+                    FlDotCirclePainter(
+                  radius: 4,
+                  color: _getChartColor(sensorType),
+                  strokeWidth: 1.5,
+                  strokeColor: Colors.white,
+                ),
               ),
             ),
           ],
           titlesData: FlTitlesData(
             leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-            ),
+                sideTitles: SideTitles(
+                    showTitles: true, reservedSize: 40)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 32,
-                getTitlesWidget: (value, meta) {
-                  final secondsAgo = (windowSeconds - value).toInt();
-                  return Text('-${secondsAgo}s', 
-                    style: const TextStyle(fontSize: 10));
-                },
                 interval: 5,
+                getTitlesWidget: (value, _) {
+                  final secAgo = (windowSec - value).toInt();
+                  return Text('-${secAgo}s',
+                      style:
+                          const TextStyle(fontSize: 10));
+                },
               ),
             ),
             rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
+                sideTitles:
+                    SideTitles(showTitles: false)),
             topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
+                sideTitles:
+                    SideTitles(showTitles: false)),
           ),
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: true,
-            drawHorizontalLine: true,
-          ),
+          gridData: FlGridData(show: true),
           borderData: FlBorderData(show: true),
         ),
-        duration: Duration.zero, // Sin animación para evitar defectos al actualizar en tiempo real
+        duration: Duration.zero,
       ),
     );
   }
 
-  Widget _buildCurrentValue(BuildContext context, SensorChartViewModel vm) {
-    final history = vm.sensorHistory[sensorType] ?? [];
-    if (history.isEmpty) return const SizedBox();
-    
+  Widget _buildCurrentValue(
+      BuildContext context, SensorChartViewModel vm) {
+    if (vm.history.isEmpty) return const SizedBox();
     final now = DateTime.now();
-    final visible = history.where((s) => 
-      now.difference(s.timestamp).inSeconds <= vm.historyWindow.inSeconds).toList();
-    
+    final visible = vm.history
+        .where((s) =>
+            now.difference(s.timestamp) <=
+            vm.historyWindow)
+        .toList();
     if (visible.isEmpty) return const SizedBox();
-    
+
     final current = visible.last;
-    
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -194,19 +205,22 @@ class _SensorChartView extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment:
+            MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Valor actual:',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          Text(
-            current.getFormattedValue(),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: _getChartColor(context, sensorType),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text('Valor actual:',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium),
+          Text(current.getFormattedValue(),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(
+                    color:
+                        _getChartColor(sensorType),
+                    fontWeight: FontWeight.bold,
+                  )),
         ],
       ),
     );
@@ -216,29 +230,15 @@ class _SensorChartView extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+          borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Información',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Este gráfico muestra los datos de ${_getLabel(sensorType).toLowerCase()} '
-              'en tiempo real durante los últimos 30 segundos.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Los datos se actualizan cada segundo con nuevas mediciones simuladas.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          'Este gráfico muestra ${_getLabel(sensorType).toLowerCase()} '
+          'de este dispositivo en tiempo real durante los últimos '
+          '${const Duration(seconds: 30).inSeconds} segundos.',
+          style:
+              Theme.of(context).textTheme.bodyMedium,
         ),
       ),
     );
@@ -257,7 +257,7 @@ class _SensorChartView extends StatelessWidget {
     }
   }
 
-  Color _getChartColor(BuildContext context, SensorType type) {
+  Color _getChartColor(SensorType type) {
     switch (type) {
       case SensorType.temperature:
         return Colors.red;

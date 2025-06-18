@@ -31,7 +31,8 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {                Navigator.push(
+              onTap: () {                
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => SensorChartScreen(
