@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 import firebase_admin
 from firebase_admin import credentials, db
 
-SERVICE_ACCOUNT_FILE = "invernadero-iot-dfa2f-firebase-adminsdk-fbsvc-286f031de9.json"           # ← tu JSON
+SERVICE_ACCOUNT_FILE = "firebaseRTDB-key.json"           # ← tu JSON
 DATABASE_URL = "https://invernadero-iot-dfa2f-default-rtdb.firebaseio.com"
 
 DEVICE_IDS = [f"dev{i}" for i in range(1, 6)]  # dev1…dev5
@@ -28,7 +28,7 @@ SENSORS = {
     },
 }
 
-SEND_EVERY_S = 1 
+SEND_EVERY_S = 10 
 
 
 def iso_now() -> str:
