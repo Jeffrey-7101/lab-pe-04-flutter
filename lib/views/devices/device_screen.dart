@@ -3,9 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../viewmodels/device_viewmodel.dart';
 import '../widgets/bottom_navbar.dart';
+import '../widgets/user_profile_icon.dart';
 import '../statistics/statistics_screen.dart';
 import '../notifications/notifications_screen.dart';
-import '../sensor/sensors_screen.dart';
+import '../profile/profile_screen.dart';
 import '../monitoring/monitoring_screen.dart';
 
 class DevicesScreen extends StatelessWidget {
@@ -24,6 +25,22 @@ class DevicesScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: UserProfileIcon(
+              size: 36.0,
+              backgroundColor: Colors.green.shade100,
+              iconColor: Colors.green.shade700,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: devices.isEmpty
           ? const Center(child: CircularProgressIndicator())
