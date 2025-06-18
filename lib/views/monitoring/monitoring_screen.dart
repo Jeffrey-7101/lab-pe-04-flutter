@@ -18,19 +18,22 @@ class MonitoringScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final device = context.watch<DevicesViewModel>().getDeviceById(deviceId);
+    final vm = context.watch<DevicesViewModel>();
+    final device = vm.getDeviceById(deviceId);
 
-    if (device == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text(
-            'Dispositivo no encontrado',
-            style: TextStyle(fontSize: 18, color: Colors.black54),
-          ),
-        ),
-      );
-    }
+    final tempIndex = device.sensors.indexWhere(
+      (s) => s.type == SensorType.temperature,
+    );
+    Sensor? tempSensor = tempIndex != -1 
+        ? device.sensors[tempIndex] 
+        : null;
 
+    final humIndex = device.sensors.indexWhere(
+      (s) => s.type == SensorType.humidity,
+    );
+    Sensor? humSensor = humIndex != -1 
+        ? device.sensors[humIndex] 
+        : null;
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -51,9 +54,7 @@ class MonitoringScreen extends StatelessWidget {
 
               ViewSwitcher(
                 isMonitoring: true,
-                onMonitoringTap: () {
-                  // Ya estamos aquí
-                },
+                onMonitoringTap: () {/* ya estamos aquí */},
                 onSensorsTap: () {
                   Navigator.pushReplacement(
                     context,
@@ -113,7 +114,8 @@ class MonitoringScreen extends StatelessWidget {
                   children: [
                     _MetricCard(
                       label: 'Temperatura',
-                      value: '23°C',
+                      // Si existe el sensor, formatea; si no, muestra guiones
+                      value: tempSensor?.getFormattedValue() ?? '--',
                       icon: Icons.thermostat_outlined,
                       color: Colors.red,
                       sensorType: SensorType.temperature,
@@ -121,7 +123,7 @@ class MonitoringScreen extends StatelessWidget {
                     const SizedBox(width: 16),
                     _MetricCard(
                       label: 'Humedad',
-                      value: '55%',
+                      value: humSensor?.getFormattedValue() ?? '--',
                       icon: Icons.water_drop_outlined,
                       color: Colors.blue,
                       sensorType: SensorType.humidity,
@@ -185,15 +187,13 @@ class _MetricCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  SensorChartScreen(sensorType: sensorType),
+              builder: (_) => SensorChartScreen(sensorType: sensorType),
             ),
           );
         },
         child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           color: Colors.white.withOpacity(0.9),
           child: Padding(
             padding: const EdgeInsets.all(16),

@@ -16,7 +16,7 @@ class NotificationItem {
     required this.severity,
     required this.timestamp,
     this.bgColor = const Color(0xFFE0F7FA),
-    this.icon = Icons.sensors,
+    this.icon = Icons.notifications_active,
     this.iconColor = Colors.lightGreen,
     this.deviceTextColor = Colors.blueGrey,
   });

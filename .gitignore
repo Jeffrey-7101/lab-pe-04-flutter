@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 
+venv/
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -19,6 +21,7 @@ migrate_working_dir/
 .idea/
 
 invernadero-iot-dfa2f-firebase-adminsdk-fbsvc-286f031de9.json
+firebaseRTDB-key.json
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
