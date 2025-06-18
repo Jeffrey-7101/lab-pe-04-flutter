@@ -5,61 +5,44 @@ import 'package:firebase_database/firebase_database.dart';
 import '../models/sensor.dart';
 
 class SensorChartViewModel extends ChangeNotifier {
-  final _ref = FirebaseDatabase.instance.ref('sensors');
-  final Duration historyWindow = const Duration(seconds: 30);
+  final String deviceId;
+  final SensorType sensorType;
+  final Duration historyWindow;
 
+  late final DatabaseReference _sensorRef;
   StreamSubscription<DatabaseEvent>? _sub;
 
-  List<Sensor> _sensors = const [];
-  List<Sensor> get sensors => List.unmodifiable(_sensors);
+  final List<Sensor> history = [];
 
-  final Map<SensorType, List<Sensor>> sensorHistory = {
-    for (var t in SensorType.values) t: <Sensor>[],
-  };
+  SensorChartViewModel({
+    required this.deviceId,
+    required this.sensorType,
+    this.historyWindow = const Duration(seconds: 30),
+  }) {
+    _sensorRef = FirebaseDatabase.instance
+        .ref('devices/$deviceId/sensors/${sensorType.name}');
 
-  SensorChartViewModel() {
-    _listenSensors();
+    _listen();
   }
 
-  void _listenSensors() {
-    _sub = _ref.onValue.listen((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+  void _listen() {
+    _sub = _sensorRef.onValue.listen((event) {
+      final json = event.snapshot.value as Map<dynamic, dynamic>?;
 
-      _sensors = _parseSensors(data);
+      if (json != null) {
+        final sample = Sensor.fromJson(json);
 
-      final now = DateTime.now();
-      for (var s in _sensors) {
-        final list = sensorHistory[s.type]!;
-        list.add(s);
-        list.removeWhere(
-          (old) => now.difference(old.timestamp) > historyWindow,
+        history.add(sample);
+        final now = DateTime.now();
+        history.removeWhere(
+          (s) => now.difference(s.timestamp) > historyWindow,
         );
+
+        notifyListeners();
       }
-
-      notifyListeners();
-    }, onError: (e) => debugPrint('Sensors error: $e'));
-  }
-
-  List<Sensor> _parseSensors(Map<dynamic, dynamic>? data) {
-    if (data == null) return const [];
-
-    final List<Sensor> out = [];
-
-    for (var entry in data.values) {
-      if (entry is Map && entry['type'] != null) {
-        out.add(Sensor.fromJson(entry));
-        continue;
-      }
-
-      if (entry is Map) {
-        for (var sub in entry.values) {
-          if (sub is Map && sub['type'] != null) {
-            out.add(Sensor.fromJson(sub));
-          }
-        }
-      }
-    }
-    return out;
+    }, onError: (e) {
+      debugPrint('SensorChart error: $e');
+    });
   }
 
   @override
