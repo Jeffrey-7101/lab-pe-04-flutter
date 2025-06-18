@@ -100,7 +100,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       final vm = context.read<LoginViewModel>();
                       vm.register(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          Navigator.pushNamed(context, '/profile');
+                          // Navegamos a la pantalla de perfil después del registro exitoso
+                          // Esto es importante para que el usuario complete su perfil después de registrarse
+                          Navigator.pushReplacementNamed(context, '/profile');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(vm.error ?? 'Error al registrarse')),
