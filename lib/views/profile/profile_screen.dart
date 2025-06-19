@@ -12,10 +12,8 @@ class ProfileScreen extends StatelessWidget {
     final loginVM = Provider.of<LoginViewModel>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Perfil'),
+        title: const Text('Mi Perfil'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -23,6 +21,7 @@ class ProfileScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -34,9 +33,8 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -57,24 +55,24 @@ class ProfileScreen extends StatelessWidget {
                       : Icon(Icons.person, size: 60, color: Colors.green.shade700),
                 ),
                 const SizedBox(height: 16),
-                // Email
-                Text(
-                  email,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Cuenta autenticada',
+                const Text('Bienvenido,',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 16,
+                  color: Colors.white70,
+                  fontSize: 20,
+                  )),
+                const SizedBox(height: 8),
+
+                Text(
+                  user?.displayName?.isNotEmpty == true 
+                    ? user!.displayName! 
+                    : user?.email ?? 'Usuario',
+                  style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
                   ),
-                  textAlign: TextAlign.center,
                 ),
+
                 const SizedBox(height: 32),
 
                 _InfoCard(
