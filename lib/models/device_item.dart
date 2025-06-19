@@ -14,7 +14,7 @@ class DeviceItem {
     required this.name,
     required this.isOnline,
     required this.lastSeen,
-    this.icon = Icons.sensors,  
+    this.icon = Icons.sensors,
     this.sensors = const [],
   });
 
@@ -23,13 +23,14 @@ class DeviceItem {
     Map<dynamic, dynamic> json,
   ) {
     final sensorsMap = json['sensors'] as Map<dynamic, dynamic>? ?? {};
+    final iconName = json['icon'] as String?;
 
     return DeviceItem(
       id: id,
       name: json['name'] as String? ?? '',
       isOnline: json['isOnline'] as bool? ?? false,
       lastSeen: json['lastSeen'] as String? ?? '',
-      icon: _iconFromString(json['icon'] as String?) ?? Icons.sensors,
+      icon: _iconFromName(iconName) ?? Icons.sensors,
       sensors: sensorsMap.entries
           .map(
             (e) => Sensor.fromJson(e.value as Map<dynamic, dynamic>),
@@ -42,15 +43,29 @@ class DeviceItem {
         'name': name,
         'isOnline': isOnline,
         'lastSeen': lastSeen,
-        'icon': icon?.codePoint.toString(),
+        'icon': _nameFromIcon(icon),
         'sensors': {
           for (var s in sensors) s.type.name: s.toJson(),
         },
       };
 
-  static IconData? _iconFromString(String? codePointStr) {
-    if (codePointStr == null) return null;
-    final cp = int.tryParse(codePointStr);
-    return cp == null ? null : IconData(cp, fontFamily: 'MaterialIcons');
+  /// Mapa de nombres de íconos a IconData
+  static const Map<String, IconData> _iconMap = {
+    'sensors': Icons.sensors,
+    'thermostat': Icons.thermostat,
+    'light': Icons.lightbulb,
+    'camera': Icons.videocam,
+    'fan': Icons.toys,
+  };
+
+  static IconData? _iconFromName(String? name) {
+    if (name == null) return null;
+    return _iconMap[name];
+  }
+
+  static String? _nameFromIcon(IconData icon) {
+    return _iconMap.entries
+        .firstWhere((entry) => entry.value == icon, orElse: () => const MapEntry('sensors', Icons.sensors))
+        .key;
   }
 }
