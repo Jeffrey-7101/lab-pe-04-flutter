@@ -95,7 +95,7 @@ class _SensorChartView extends StatelessWidget {
     if (history.isEmpty) {
       return const SizedBox(
         height: 300,
-        child: Center(child: Text('Esperando datos…')),
+        child: Center(child: Text('Sensor desconectado')),
       );
     }
 

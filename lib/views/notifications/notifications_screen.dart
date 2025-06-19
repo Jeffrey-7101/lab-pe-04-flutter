@@ -6,6 +6,7 @@ import '../widgets/bottom_navbar.dart';
 import '../statistics/statistics_screen.dart';
 import '../home/home_screen.dart';
 import '../devices/device_screen.dart';
+import '../profile/profile_screen.dart';  // ← Importa tu ProfileScreen
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -22,6 +23,18 @@ class NotificationsScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: vm.notifications.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -31,7 +44,8 @@ class NotificationsScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final item = vm.notifications[i];
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: item.bgColor,

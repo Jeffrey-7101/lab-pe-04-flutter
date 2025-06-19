@@ -100,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       final vm = context.read<LoginViewModel>();
                       vm.register(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          Navigator.pushNamed(context, '/profile');
+                          Navigator.pushNamed(context, '/login');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(vm.error ?? 'Error al registrarse')),

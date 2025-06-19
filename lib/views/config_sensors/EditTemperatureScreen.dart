@@ -40,7 +40,6 @@ class _EditTemperatureScreenState extends State<EditTemperatureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar transparente para que se vea el degradado
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Editar Temperatura'),
@@ -79,7 +78,7 @@ class _EditTemperatureScreenState extends State<EditTemperatureScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Ajusta los valores mínimo y máximo',
+                  'Ajusta los valores mínimo y máximo (funcionalidad en desarrollo)',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 16,
