@@ -59,24 +59,7 @@ Usa **hot restart** (⇧ R) tras cambios en inicialización de Firebase.
   - **Email**: `admin@gmail.com`
   - **Password**: `admin123`
 
-## Simulador de datos
-
-Para pruebas sin hardware, ejecuta:
-
-```bash
-python simulate_rtdb.py
-```
-
-Asegúrate de haber activado tu virtualenv e instalado `firebase-admin`.
 
 ## Podar notificaciones
 
 La app mantiene sólo las 5 últimas notificaciones automáticamente.  
-
-## Contribuciones
-
-1. Fork del repositorio  
-2. Crear una rama para tu feature  
-3. Pull request describiendo cambios  
-
-¡Gracias por colaborar!
