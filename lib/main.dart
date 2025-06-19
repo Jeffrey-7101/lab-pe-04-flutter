@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'firebase_options.dart';
 import 'viewmodels/login_viewmodel.dart';
@@ -13,9 +14,18 @@ import 'views/profile/profile_screen.dart';
 import 'views/statistics/statistics_screen.dart';
 import 'views/notifications/notifications_screen.dart';
 import 'views/devices/device_screen.dart';
+import 'services/fcm_service.dart';
 
-Future<void> main() async { 
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint('🛑 Notificación en background: ${message.notification?.title}');
+}
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   try {
     await Firebase.initializeApp(
@@ -26,8 +36,12 @@ Future<void> main() async {
       rethrow;
     }
   }
+
+  await FCMService.init();
+
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
