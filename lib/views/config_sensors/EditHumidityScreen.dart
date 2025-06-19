@@ -77,7 +77,7 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Ajusta los valores mínimo y máximo',
+                  'Ajusta los valores mínimo y máximo (funcionalidad en desarrollo)',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 16,

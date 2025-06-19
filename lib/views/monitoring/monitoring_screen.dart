@@ -79,33 +79,33 @@ class MonitoringScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SensorChartScreen(
-                        sensorType: SensorType.temperature,
-                        deviceId: deviceId,
-                      ),
-                    ),
-                  );
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '📈 Gráfico en tiempo real',
-                      style: TextStyle(fontSize: 18, color: Colors.black54),
-                    ),
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (_) => SensorChartScreen(
+              //           sensorType: SensorType.temperature,
+              //           deviceId: deviceId,
+              //         ),
+              //       ),
+              //     );
+              //   },
+              //   child: Container(
+              //     margin: const EdgeInsets.symmetric(horizontal: 16),
+              //     height: 200,
+              //     decoration: BoxDecoration(
+              //       color: Colors.white.withOpacity(0.9),
+              //       borderRadius: BorderRadius.circular(16),
+              //     ),
+              //     child: const Center(
+              //       child: Text(
+              //         '📈 Gráfico en tiempo real',
+              //         style: TextStyle(fontSize: 18, color: Colors.black54),
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               const SizedBox(height: 24),
 
