@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/device_viewmodel.dart';
-import '../widgets/user_profile_icon.dart';
-import '../monitoring/monitoring_screen.dart';
+import '../../core/routes/navigation_helper.dart';
+import '../widgets/profile_app_bar_action.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});
@@ -22,16 +22,7 @@ class DevicesScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: UserProfileIcon(
-              size: 36.0,
-              backgroundColor: Colors.green.shade100,
-              iconColor: Colors.green.shade700,              onTap: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-            ),
-          ),
+          const ProfileAppBarAction(),
         ],
       ),
       body: devices.isEmpty
@@ -42,14 +33,8 @@ class DevicesScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final d = devices[i];
                 return InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MonitoringScreen(deviceId: d.id),
-                      ),
-                    );
+                  borderRadius: BorderRadius.circular(16),                  onTap: () {
+                    NavigationHelper.toMonitoring(context, d.id);
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(

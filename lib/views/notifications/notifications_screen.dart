@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/notifications_viewmodel.dart';
-import '../widgets/user_profile_icon.dart';
-import '../profile/profile_screen.dart';
-import '../statistics/statistics_screen.dart';
-import '../devices/device_screen.dart';
-import '../profile/profile_screen.dart';  // ← Importa tu ProfileScreen
+import '../widgets/profile_app_bar_action.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -22,22 +18,8 @@ class NotificationsScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: UserProfileIcon(
-              size: 36.0,
-              backgroundColor: Colors.green.shade100,
-              iconColor: Colors.green.shade700,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                );
-              },
-            ),
-          ),
+        centerTitle: true,        actions: [
+          const ProfileAppBarAction(),
         ],
       ),
       body: vm.notifications.isEmpty

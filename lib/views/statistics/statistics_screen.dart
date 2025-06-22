@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/user_profile_icon.dart';
-import '../profile/profile_screen.dart';
-import 'sensor_chart_screen.dart';
+import '../../core/routes/navigation_helper.dart';
+import '../widgets/profile_app_bar_action.dart';
 import '../../models/sensor.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -25,20 +24,7 @@ class DashboardScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: UserProfileIcon(
-              size: 36.0,
-              backgroundColor: Colors.green.shade100,
-              iconColor: Colors.green.shade700,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                );
-              },
-            ),
-          ),
+          const ProfileAppBarAction(),
         ],
       ),
       body: SingleChildScrollView(
@@ -47,13 +33,10 @@ class DashboardScreen extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(
+                NavigationHelper.toSensorChart(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => SensorChartScreen(
-                      sensorType: SensorType.temperature,
-                    ),
-                  ),
+                  sensorType: SensorType.temperature,
+                  deviceId: 'device1', // Debe usarse un id real
                 );
               },
               child: Container(
@@ -137,7 +120,13 @@ class _MetricCard extends StatelessWidget {
       //   );
       // },
       child: Card(
-        color: Colors.white.withOpacity(0.9),
+        // color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(
+          red: 255,
+          green: 255,
+          blue: 255,
+          alpha: 230,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16),

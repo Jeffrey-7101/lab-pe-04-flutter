@@ -85,12 +85,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       final vm = context.read<LoginViewModel>();
                       vm.login(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          // Ya no necesitamos navegar manualmente porque el AuthWrapper se encargará de esto
-                          // cuando el estado de autenticación cambie
+                          // Al iniciar sesión exitosamente, el AuthWrapper se encargará
+                          // de la navegación automáticamente
+                          if (context.mounted) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/', 
+                              (route) => false,
+                            );
+                          }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(vm.error ?? 'Error al iniciar sesión')),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(vm.error ?? 'Error al iniciar sesión'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       });
                     }
@@ -105,8 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
-                TextButton(
+                const SizedBox(height: 24),                TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/register');
                   },
