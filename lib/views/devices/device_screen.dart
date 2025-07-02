@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/device_viewmodel.dart';
-import '../widgets/bottom_navbar.dart';
-import '../statistics/statistics_screen.dart';
-import '../notifications/notifications_screen.dart';
-import '../sensor/sensors_screen.dart';
-import '../monitoring/monitoring_screen.dart';
+import '../../core/routes/navigation_helper.dart';
+import '../widgets/profile_app_bar_action.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({super.key});
@@ -24,6 +21,9 @@ class DevicesScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          const ProfileAppBarAction(),
+        ],
       ),
       body: devices.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -33,14 +33,8 @@ class DevicesScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final d = devices[i];
                 return InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MonitoringScreen(deviceId: d.id),
-                      ),
-                    );
+                  borderRadius: BorderRadius.circular(16),                  onTap: () {
+                    NavigationHelper.toMonitoring(context, d.id);
                   },
                   child: Card(
                     shape: RoundedRectangleBorder(
@@ -70,27 +64,6 @@ class DevicesScreen extends StatelessWidget {
                 );
               },
             ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
-        onTap: (idx) {
-          switch (idx) {
-            case 0:
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
-              break;
-          }
-        },
-      ),
     );
   }
 }

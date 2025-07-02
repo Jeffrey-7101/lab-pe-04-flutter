@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/notifications_viewmodel.dart';
-import '../widgets/bottom_navbar.dart';
-import '../statistics/statistics_screen.dart';
-import '../home/home_screen.dart';
-import '../devices/device_screen.dart';
-import '../profile/profile_screen.dart';  // ← Importa tu ProfileScreen
+import '../widgets/profile_app_bar_action.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -22,18 +18,8 @@ class NotificationsScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
-            },
-          ),
+        centerTitle: true,        actions: [
+          const ProfileAppBarAction(),
         ],
       ),
       body: vm.notifications.isEmpty
@@ -81,27 +67,6 @@ class NotificationsScreen extends StatelessWidget {
                 );
               },
             ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 2,
-        onTap: (idx) {
-          switch (idx) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DevicesScreen()),
-              );
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-              break;
-            case 2:
-              break;
-          }
-        },
-      ),
     );
   }
 }

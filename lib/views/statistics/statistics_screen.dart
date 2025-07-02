@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import '../devices/device_screen.dart';
-import '../widgets/bottom_navbar.dart';
-import '../notifications/notifications_screen.dart';
-import 'sensor_chart_screen.dart';
+import '../../core/routes/navigation_helper.dart';
+import '../widgets/profile_app_bar_action.dart';
 import '../../models/sensor.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -25,20 +23,20 @@ class DashboardScreen extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          const ProfileAppBarAction(),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             GestureDetector(
-              onTap: () {                
-              Navigator.push(
+              onTap: () {
+                NavigationHelper.toSensorChart(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => SensorChartScreen(
-                      sensorType: SensorType.temperature,
-                    ),
-                  ),
+                  sensorType: SensorType.temperature,
+                  deviceId: 'device1', // Debe usarse un id real
                 );
               },
               child: Container(
@@ -87,27 +85,7 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 1,
-        onTap: (idx) {
-          switch (idx) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const DevicesScreen()),
-              );
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-              );
-              break;
-          }
-        },
-      ),
+      // Ya no necesitamos la barra de navegación inferior aquí
     );
   }
 }
@@ -142,7 +120,13 @@ class _MetricCard extends StatelessWidget {
       //   );
       // },
       child: Card(
-        color: Colors.white.withOpacity(0.9),
+        // color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(
+          red: 255,
+          green: 255,
+          blue: 255,
+          alpha: 230,
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16),

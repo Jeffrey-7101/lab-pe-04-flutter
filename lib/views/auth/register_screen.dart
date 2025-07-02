@@ -100,11 +100,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       final vm = context.read<LoginViewModel>();
                       vm.register(_emailCtrl.text, _passCtrl.text).then((user) {
                         if (user != null) {
-                          Navigator.pushNamed(context, '/login');
+                          // Al registrarse exitosamente, el AuthWrapper se encargará
+                          // de la navegación automáticamente
+                          if (context.mounted) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/', 
+                              (route) => false,
+                            );
+                          }
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(vm.error ?? 'Error al registrarse')),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(vm.error ?? 'Error al registrarse'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       });
                     }

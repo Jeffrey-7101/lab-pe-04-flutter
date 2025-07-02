@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
 import '../models/notification_item.dart';
 
 class NotificationsViewModel extends ChangeNotifier {
@@ -26,7 +25,7 @@ class NotificationsViewModel extends ChangeNotifier {
                   NotificationItem.fromJson(v as Map<dynamic, dynamic>))
               .toList()
             ..sort(
-              (a, b) => b.timeAgo.compareTo(a.timeAgo),
+              (a, b) => b.timestamp.compareTo(a.timestamp),
             );
 
       notifyListeners();

@@ -1,0 +1,54 @@
+import firebase_admin
+from firebase_admin import credentials, db, messaging
+from datetime import datetime
+import threading
+
+SERVICE_ACCOUNT_FILE = "invernadero-iot.json"
+DATABASE_URL = "https://invernadero-iot-default-rtdb.firebaseio.com"
+
+cred = credentials.Certificate(SERVICE_ACCOUNT_FILE)
+firebase_admin.initialize_app(cred, {"databaseURL": DATABASE_URL})
+
+def enviar_a_todos(message: str, severity: str, timestamp: str):
+    fcm_tokens = db.reference("fcmTokens").get()
+    if not fcm_tokens:
+        print("❌ No hay tokens registrados.")
+        return
+
+    for uid, data in fcm_tokens.items():
+        token = data.get("token")
+        if not token:
+            continue
+        try:
+            msg = messaging.Message(
+                notification=messaging.Notification(
+                    title="🚨 Alerta de sensor",
+                    body=message,
+                ),
+                data={
+                    "severity": severity,
+                    "timestamp": timestamp,
+                },
+                token=token,
+            )
+            messaging.send(msg)
+            print(f"✅ Push enviada a {uid}")
+        except Exception as e:
+            print(f"❌ Error al enviar a {uid}: {e}")
+
+def listener(event):
+    if event.event_type == "put" and event.path != "/":
+        data = event.data
+        if not isinstance(data, dict):
+            return
+        message = data.get("message", "Alerta")
+        severity = data.get("severity", "high")
+        timestamp = data.get("timestamp", datetime.utcnow().isoformat())
+        enviar_a_todos(message, severity, timestamp)
+
+def main():
+    notif_ref = db.reference("notifications")
+    notif_ref.listen(listener)
+
+if __name__ == "__main__":
+    threading.Thread(target=main).start()

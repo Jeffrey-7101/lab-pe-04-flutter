@@ -29,7 +29,7 @@ SENSORS = {
     },
 }
 
-SEND_EVERY_S = 2
+SEND_EVERY_S = 5
 
 def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat()
