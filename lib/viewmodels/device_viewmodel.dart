@@ -68,32 +68,35 @@ class DevicesViewModel extends ChangeNotifier {
 
     notifyListeners();
 
-    // Convertir el tipo de sensor al nombre de nodo correcto que usa el simulador
-    final String sensorNodeName = _getSensorNodeName(type);
-    
-    // Actualizar en Firebase
-    _ref
-        .child(deviceId)
-        .child('sensors')
-        .child(sensorNodeName)
-        .update({'minValue': min, 'maxValue': max})
-        .then((_) => debugPrint('Límites de sensor actualizados correctamente'))
-        .catchError((error) => debugPrint('Error al actualizar límites: $error'));
+    // Usar el nuevo SensorService para actualizar límites
+    _updateSensorLimitsInFirebase(deviceId, type, min, max);
   }
   
-  // Obtiene el nombre del nodo de sensor en Firebase
-  String _getSensorNodeName(SensorType type) {
-    switch (type) {
-      case SensorType.temperature:
-        return 'temperature';
-      case SensorType.humidity:
-        return 'humidity';
-      case SensorType.light:
-        return 'light';
-      case SensorType.co2:
-        return 'co2';
-      default:
-        return type.name; // Fallback al nombre del enum
+  Future<void> _updateSensorLimitsInFirebase(
+    String deviceId,
+    SensorType type,
+    double min,
+    double max,
+  ) async {
+    try {
+      final sensorId = '${deviceId}_${type.name}';
+      
+      // Actualizar en el sensor fijo con ID específico
+      await _ref.root
+          .child('sensors')
+          .child(sensorId)
+          .update({'minValue': min, 'maxValue': max});
+      
+      // También actualizar en la estructura del dispositivo
+      await _ref
+          .child(deviceId)
+          .child('sensors')
+          .child(type.name)
+          .update({'minValue': min, 'maxValue': max});
+          
+      debugPrint('Límites de sensor actualizados correctamente para $sensorId');
+    } catch (error) {
+      debugPrint('Error al actualizar límites: $error');
     }
   }
 

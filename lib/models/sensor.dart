@@ -1,17 +1,21 @@
 enum SensorType { temperature, humidity, light, co2 }
 
 class Sensor {
+  final String? id; // ID único para identificar el sensor
   final SensorType type;
   double value;
   DateTime timestamp;
   double maxValue;
   double minValue;
+  final String? deviceId; // ID del dispositivo al que pertenece
 
   Sensor({
+    this.id,
     required this.type,
     required this.value,
     this.maxValue = 100.0,
     this.minValue = 0.0,
+    this.deviceId,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
@@ -54,10 +58,12 @@ class Sensor {
 
   factory Sensor.fromJson(Map<dynamic, dynamic> json) {
     return Sensor(
+      id: json['id'] as String?,
       type: _parseType(json['type'] as String),
       value: (json['value'] as num).toDouble(),
       minValue: (json['minValue'] as num?)?.toDouble() ?? 0.0,
       maxValue: (json['maxValue'] as num?)?.toDouble() ?? 100.0,
+      deviceId: json['deviceId'] as String?,
       timestamp: DateTime.fromMillisecondsSinceEpoch(
         ((json['timestamp'] ?? 0) as int) * 1000,
       ),
@@ -65,10 +71,12 @@ class Sensor {
   }
 
   Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
         'type': type.name,
         'value': value,
         'minValue': minValue,
         'maxValue': maxValue,
+        if (deviceId != null) 'deviceId': deviceId,
         'timestamp': timestamp.millisecondsSinceEpoch ~/ 1000,
       };
 
