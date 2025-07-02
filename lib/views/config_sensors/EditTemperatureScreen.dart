@@ -78,7 +78,7 @@ class _EditTemperatureScreenState extends State<EditTemperatureScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Ajusta los valores mínimo y máximo (funcionalidad en desarrollo)',
+                  'Ajusta los valores mínimo y máximo para este sensor',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 16,
@@ -132,6 +132,16 @@ class _EditTemperatureScreenState extends State<EditTemperatureScreen> {
                             minValue,
                             maxValue,
                           );
+                          
+                          // Mostrar mensaje de éxito
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Configuración de temperatura actualizada'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                          
                           Navigator.pop(context);
                         },
                         child: const Text(

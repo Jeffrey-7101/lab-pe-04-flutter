@@ -13,14 +13,17 @@ class SensorChartViewModel extends ChangeNotifier {
   StreamSubscription<DatabaseEvent>? _sub;
 
   final List<Sensor> history = [];
+  Sensor? currentSensor;
 
   SensorChartViewModel({
     required this.deviceId,
     required this.sensorType,
     this.historyWindow = const Duration(seconds: 30),
   }) {
+    // Escuchar el sensor fijo con ID específico
+    final sensorId = '${deviceId}_${sensorType.name}';
     _sensorRef = FirebaseDatabase.instance
-        .ref('devices/$deviceId/sensors/${sensorType.name}');
+        .ref('sensors/$sensorId');
 
     _listen();
   }
@@ -31,7 +34,9 @@ class SensorChartViewModel extends ChangeNotifier {
 
       if (json != null) {
         final sample = Sensor.fromJson(json);
+        currentSensor = sample;
 
+        // Agregar al historial para el gráfico
         history.add(sample);
         final now = DateTime.now();
         history.removeWhere(

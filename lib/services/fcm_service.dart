@@ -8,49 +8,49 @@ class FCMService {
 
   /// Inicializa el servicio de notificaciones
   static Future<void> init() async {
-    await _fcm.requestPermission();
+    // await _fcm.requestPermission();
 
-    final token = await _fcm.getToken();
-    debugPrint('🔑 FCM Token: $token');
+    // final token = await _fcm.getToken();
+    // debugPrint('🔑 FCM Token: $token');
 
-    // Escucha notificaciones en primer plano
-    FirebaseMessaging.onMessage.listen((message) {
-      debugPrint('📩 Notificación en foreground: ${message.notification?.title}');
-    });
+    // // Escucha notificaciones en primer plano
+    // FirebaseMessaging.onMessage.listen((message) {
+    //   debugPrint('📩 Notificación en foreground: ${message.notification?.title}');
+    // });
 
-    // Notificación tocada con la app en background
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      debugPrint('🚀 App abierta desde notificación: ${message.notification?.title}');
-    });
+    // // Notificación tocada con la app en background
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   debugPrint('🚀 App abierta desde notificación: ${message.notification?.title}');
+    // });
 
-    // App abierta directamente desde una notificación
-    final initialMessage = await _fcm.getInitialMessage();
-    if (initialMessage != null) {
-      debugPrint('🟢 App lanzada por notificación: ${initialMessage.notification?.title}');
-    }
+    // // App abierta directamente desde una notificación
+    // final initialMessage = await _fcm.getInitialMessage();
+    // if (initialMessage != null) {
+    //   debugPrint('🟢 App lanzada por notificación: ${initialMessage.notification?.title}');
+    // }
   }
 
   /// Guarda el token del dispositivo en Firebase RTDB vinculado al UID del usuario
   static Future<void> saveTokenToDatabase() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      debugPrint("❌ Usuario no autenticado, no se puede guardar el token.");
-      return;
-    }
+    // final user = FirebaseAuth.instance.currentUser;
+    // if (user == null) {
+    //   debugPrint("❌ Usuario no autenticado, no se puede guardar el token.");
+    //   return;
+    // }
 
-    final token = await _fcm.getToken();
-    if (token == null) {
-      debugPrint("❌ Token FCM no disponible.");
-      return;
-    }
+    // final token = await _fcm.getToken();
+    // if (token == null) {
+    //   debugPrint("❌ Token FCM no disponible.");
+    //   return;
+    // }
 
-    final ref = FirebaseDatabase.instance.ref("fcmTokens/${user.uid}");
-    await ref.set({
-      "token": token,
-      "email": user.email ?? '',
-      "updatedAt": DateTime.now().toUtc().toIso8601String(),
-    });
+    // final ref = FirebaseDatabase.instance.ref("fcmTokens/${user.uid}");
+    // await ref.set({
+    //   "token": token,
+    //   "email": user.email ?? '',
+    //   "updatedAt": DateTime.now().toUtc().toIso8601String(),
+    // });
 
-    debugPrint("✅ Token FCM guardado para UID: ${user.uid}");
+    // debugPrint("✅ Token FCM guardado para UID: ${user.uid}");
   }
 }

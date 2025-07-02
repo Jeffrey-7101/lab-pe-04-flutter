@@ -68,11 +68,36 @@ class DevicesViewModel extends ChangeNotifier {
 
     notifyListeners();
 
-    _ref
-        .child(deviceId)
-        .child('sensors')
-        .child(type.name)
-        .update({'minValue': min, 'maxValue': max});
+    // Usar el nuevo SensorService para actualizar límites
+    _updateSensorLimitsInFirebase(deviceId, type, min, max);
+  }
+  
+  Future<void> _updateSensorLimitsInFirebase(
+    String deviceId,
+    SensorType type,
+    double min,
+    double max,
+  ) async {
+    try {
+      final sensorId = '${deviceId}_${type.name}';
+      
+      // Actualizar en el sensor fijo con ID específico
+      await _ref.root
+          .child('sensors')
+          .child(sensorId)
+          .update({'minValue': min, 'maxValue': max});
+      
+      // También actualizar en la estructura del dispositivo
+      await _ref
+          .child(deviceId)
+          .child('sensors')
+          .child(type.name)
+          .update({'minValue': min, 'maxValue': max});
+          
+      debugPrint('Límites de sensor actualizados correctamente para $sensorId');
+    } catch (error) {
+      debugPrint('Error al actualizar límites: $error');
+    }
   }
 
   @override
