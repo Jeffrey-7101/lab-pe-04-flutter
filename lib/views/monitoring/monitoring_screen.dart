@@ -76,7 +76,7 @@ class _MonitoringScreenState extends State<MonitoringScreen>
 
   Widget _buildHeader(String deviceName) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(12.0), // Reducido de 16 a 12
       child: Row(
         children: [
           IconButton(
@@ -92,7 +92,7 @@ class _MonitoringScreenState extends State<MonitoringScreen>
                   deviceName,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 22, // Reducido de 24 a 22
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -175,16 +175,16 @@ class _MetricCard extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12), // Reducido de 16 a 12
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: color),
-              const SizedBox(height: 8),
+              Icon(icon, size: 28, color: color), // Reducido de 32 a 28
+              const SizedBox(height: 6), // Reducido de 8 a 6
               Text(
                 value,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18, // Reducido de 20 a 18
                   fontWeight: FontWeight.bold,
                   color: color,
                 ),
@@ -194,13 +194,79 @@ class _MetricCard extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 11, // Reducido de 12 a 11
                   color: Colors.grey,
                 ),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget para mostrar un switch/interruptor
+class _SwitchCard extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final SensorType sensorType;
+  final String deviceId;
+  final bool isActive;
+
+  const _SwitchCard({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.sensorType,
+    required this.deviceId,
+    required this.isActive,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = context.watch<DevicesViewModel>();
+    
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white.withOpacity(0.9),
+      child: Padding(
+        padding: const EdgeInsets.all(12), // Reducido de 16 a 12
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 28, color: isActive ? color : Colors.grey), // Reducido de 32 a 28
+            const SizedBox(height: 6), // Reducido de 8 a 6
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12, // Reducido de 14 a 12
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8), // Reducido de 12 a 8
+            Switch(
+              value: isActive,
+              onChanged: (value) {
+                vm.updateSensorActiveState(deviceId, sensorType, value);
+              },
+              activeColor: color,
+              activeTrackColor: color.withOpacity(0.3),
+            ),
+            const SizedBox(height: 2), // Reducido de 4 a 2
+            Text(
+              isActive ? 'Activado' : 'Desactivado',
+              style: TextStyle(
+                fontSize: 10, // Reducido de 12 a 10
+                color: isActive ? color : Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -228,18 +294,8 @@ class _MonitoringTab extends StatelessWidget {
     final humSensor = device.sensors.cast<Sensor?>().firstWhere(
       (s) => s?.type == SensorType.humidity,
       orElse: () => null,
-    );
-
-    final lightSensor = device.sensors.cast<Sensor?>().firstWhere(
-      (s) => s?.type == SensorType.light,
-      orElse: () => null,
-    );
-
-    final co2Sensor = device.sensors.cast<Sensor?>().firstWhere(
-      (s) => s?.type == SensorType.co2,
-      orElse: () => null,
     );    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12), // Reducido de 16 a 12
       child: Column(
         children: [
           // Header del tab con icono
@@ -248,25 +304,25 @@ class _MonitoringTab extends StatelessWidget {
               Icon(
                 Icons.monitor,
                 color: Colors.white,
-                size: 24,
+                size: 22, // Reducido de 24 a 22
               ),
               const SizedBox(width: 8),
               const Text(
                 'Panel de Control',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 16, // Reducido de 18 a 16
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12), // Reducido de 16 a 12
           
           // Estado del dispositivo
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16), // Reducido de 20 a 16
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(16),
@@ -275,14 +331,14 @@ class _MonitoringTab extends StatelessWidget {
               children: [
                 Icon(
                   device.isOnline ? Icons.check_circle : Icons.error,
-                  size: 48,
+                  size: 42, // Reducido de 48 a 42
                   color: device.isOnline ? Colors.green : Colors.red,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6), // Reducido de 8 a 6
                 Text(
                   device.isOnline ? 'En línea' : 'Desconectado',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16, // Reducido de 18 a 16
                     fontWeight: FontWeight.bold,
                     color: device.isOnline ? Colors.green : Colors.red,
                   ),
@@ -290,21 +346,22 @@ class _MonitoringTab extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Última actualización: ${device.lastSeen}',
-                  style: const TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
           ),
           
-          const SizedBox(height: 20),
+          const SizedBox(height: 16), // Reducido de 20 a 16
           
           // Grid de métricas principales
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+            crossAxisSpacing: 12, // Reducido de 16 a 12
+            mainAxisSpacing: 12, // Reducido de 16 a 12
+            childAspectRatio: 0.85, // Hacer las cards más compactas
             children: [
               _MetricCard(
                 label: 'Temperatura',
@@ -322,21 +379,21 @@ class _MonitoringTab extends StatelessWidget {
                 sensorType: SensorType.humidity,
                 deviceId: deviceId,
               ),
-              _MetricCard(
-                label: 'Luz',
-                value: lightSensor?.getFormattedValue() ?? '--',
-                icon: Icons.wb_sunny_outlined,
-                color: Colors.orange,
-                sensorType: SensorType.light,
+              _SwitchCard(
+                label: 'Control de Temperatura',
+                icon: Icons.device_thermostat,
+                color: Colors.red,
+                sensorType: SensorType.temperature,
                 deviceId: deviceId,
+                isActive: tempSensor?.actionIsActive ?? false,
               ),
-              _MetricCard(
-                label: 'CO₂',
-                value: co2Sensor?.getFormattedValue() ?? '--',
-                icon: Icons.cloud_outlined,
-                color: Colors.grey,
-                sensorType: SensorType.co2,
+              _SwitchCard(
+                label: 'Control de Humedad',
+                icon: Icons.opacity,
+                color: Colors.blue,
+                sensorType: SensorType.humidity,
                 deviceId: deviceId,
+                isActive: humSensor?.actionIsActive ?? false,
               ),
             ],
           ),
@@ -361,20 +418,20 @@ class _SensorsTab extends StatelessWidget {
       children: [
         // Header del tab con icono
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12), // Reducido de 16 a 12
           child: Row(
             children: [
               Icon(
                 Icons.sensors,
                 color: Colors.white,
-                size: 24,
+                size: 22, // Reducido para consistencia
               ),
               const SizedBox(width: 8),
               const Text(
                 'Lista de Sensores',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 16, // Reducido para consistencia
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -384,7 +441,7 @@ class _SensorsTab extends StatelessWidget {
         // Lista de sensores
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12), // Reducido de 16 a 12
             itemCount: device.sensors.length,
             itemBuilder: (context, index) {
               final sensor = device.sensors[index];
@@ -434,15 +491,16 @@ class _SensorListItem extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8), // Reducido de 12 a 8
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), // Padding más compacto
         leading: CircleAvatar(
           backgroundColor: color.withOpacity(0.2),
-          child: Icon(icon, color: color),
+          child: Icon(icon, color: color, size: 20), // Ícono más pequeño
         ),
         title: Text(
           sensor.getLabel(),

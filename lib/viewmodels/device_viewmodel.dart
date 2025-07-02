@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../models/device_item.dart';
 import '../models/sensor.dart';
+import '../services/sensor_service.dart';
 
 class DevicesViewModel extends ChangeNotifier {
   final _ref = FirebaseDatabase.instance.ref('devices');
@@ -68,36 +69,28 @@ class DevicesViewModel extends ChangeNotifier {
 
     notifyListeners();
 
-    // Usar el nuevo SensorService para actualizar límites
-    _updateSensorLimitsInFirebase(deviceId, type, min, max);
+    // Usar SensorService para actualizar límites
+    SensorService.updateSensorLimits(deviceId, type, min, max);
   }
-  
-  Future<void> _updateSensorLimitsInFirebase(
+
+  void updateSensorActiveState(
     String deviceId,
     SensorType type,
-    double min,
-    double max,
-  ) async {
-    try {
-      final sensorId = '${deviceId}_${type.name}';
-      
-      // Actualizar en el sensor fijo con ID específico
-      await _ref.root
-          .child('sensors')
-          .child(sensorId)
-          .update({'minValue': min, 'maxValue': max});
-      
-      // También actualizar en la estructura del dispositivo
-      await _ref
-          .child(deviceId)
-          .child('sensors')
-          .child(type.name)
-          .update({'minValue': min, 'maxValue': max});
-          
-      debugPrint('Límites de sensor actualizados correctamente para $sensorId');
-    } catch (error) {
-      debugPrint('Error al actualizar límites: $error');
-    }
+    bool isActive,
+  ) {
+    final devIndex = _devices.indexWhere((d) => d.id == deviceId);
+    if (devIndex == -1) return;
+
+    final sensorIndex =
+        _devices[devIndex].sensors.indexWhere((s) => s.type == type);
+    if (sensorIndex == -1) return;
+
+    _devices[devIndex].sensors[sensorIndex].actionIsActive = isActive;
+
+    notifyListeners();
+
+    // Usar SensorService para actualizar estado en Firebase
+    SensorService.updateSensorActiveState(deviceId, type, isActive);
   }
 
   @override
