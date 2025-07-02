@@ -68,11 +68,33 @@ class DevicesViewModel extends ChangeNotifier {
 
     notifyListeners();
 
+    // Convertir el tipo de sensor al nombre de nodo correcto que usa el simulador
+    final String sensorNodeName = _getSensorNodeName(type);
+    
+    // Actualizar en Firebase
     _ref
         .child(deviceId)
         .child('sensors')
-        .child(type.name)
-        .update({'minValue': min, 'maxValue': max});
+        .child(sensorNodeName)
+        .update({'minValue': min, 'maxValue': max})
+        .then((_) => debugPrint('Límites de sensor actualizados correctamente'))
+        .catchError((error) => debugPrint('Error al actualizar límites: $error'));
+  }
+  
+  // Obtiene el nombre del nodo de sensor en Firebase
+  String _getSensorNodeName(SensorType type) {
+    switch (type) {
+      case SensorType.temperature:
+        return 'temperature';
+      case SensorType.humidity:
+        return 'humidity';
+      case SensorType.light:
+        return 'light';
+      case SensorType.co2:
+        return 'co2';
+      default:
+        return type.name; // Fallback al nombre del enum
+    }
   }
 
   @override

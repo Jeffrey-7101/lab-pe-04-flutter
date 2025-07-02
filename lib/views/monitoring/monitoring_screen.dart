@@ -460,11 +460,21 @@ class _SensorListItem extends StatelessWidget {
           },
         ),
         onTap: () {
-          NavigationHelper.toSensorChart(
-            context,
-            sensorType: sensor.type,
-            deviceId: deviceId,
-          );
+          // Solo para temperatura y humedad navegar a pantallas de configuración
+          if (sensor.type == SensorType.temperature || sensor.type == SensorType.humidity) {
+            NavigationHelper.toSensorConfig(
+              context,
+              sensorType: sensor.type,
+              deviceId: deviceId,
+            );
+          } else {
+            // Para otros sensores, mantener el comportamiento anterior
+            NavigationHelper.toSensorChart(
+              context,
+              sensorType: sensor.type,
+              deviceId: deviceId,
+            );
+          }
         },
       ),
     );

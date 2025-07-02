@@ -77,7 +77,7 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Ajusta los valores mínimo y máximo (funcionalidad en desarrollo)',
+                  'Ajusta los valores mínimo y máximo para este sensor',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 16,
@@ -127,6 +127,16 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
                             minValue,
                             maxValue,
                           );
+                          
+                          // Mostrar mensaje de éxito
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Configuración de humedad actualizada'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                          
                           Navigator.pop(context);
                         },
                         child: const Text(

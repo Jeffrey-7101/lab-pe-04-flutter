@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'app_routes.dart';
+import '../../models/sensor.dart';
+import '../../views/config_sensors/EditTemperatureScreen.dart';
+import '../../views/config_sensors/EditHumidityScreen.dart';
 
 /// Helper class para navegación con métodos de conveniencia
 class NavigationHelper {
@@ -65,6 +68,34 @@ class NavigationHelper {
       'sensorType': sensorType,
       'deviceId': deviceId,
     });
+  }
+  
+  /// Navega a la pantalla de configuración de sensor
+  static void toSensorConfig(BuildContext context, {
+    required SensorType sensorType,
+    required String deviceId,
+  }) {
+    switch (sensorType) {
+      case SensorType.temperature:
+        Navigator.push(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => EditTemperatureScreen(deviceId: deviceId),
+          ),
+        );
+        break;
+      case SensorType.humidity:
+        Navigator.push(
+          context, 
+          MaterialPageRoute(
+            builder: (context) => EditHumidityScreen(deviceId: deviceId),
+          ),
+        );
+        break;
+      default:
+        // Para otros tipos de sensores, redirigir al gráfico por ahora
+        toSensorChart(context, sensorType: sensorType, deviceId: deviceId);
+    }
   }
   
   /// Navega a un tab específico del bottom navigation
