@@ -73,6 +73,27 @@ class SensorService {
     }
   }
 
+  /// Actualiza el estado activo/inactivo de un sensor (para switches)
+  static Future<void> updateSensorActiveState(String deviceId, SensorType sensorType, 
+      bool isActive) async {
+    try {
+      final sensorId = '${deviceId}_${sensorType.name}';
+      await _database.ref('sensors/$sensorId').update({
+        'actionIsActive': isActive,
+      });
+      
+      // También actualizar en la estructura del dispositivo
+      await _database.ref('devices/$deviceId/sensors/${sensorType.name}').update({
+        'actionIsActive': isActive,
+      });
+      
+      print('Estado del sensor $sensorId actualizado a: ${isActive ? "activo" : "inactivo"}');
+    } catch (e) {
+      print('Error actualizando estado del sensor: $e');
+      rethrow;
+    }
+  }
+
   // Mantener el método original para compatibilidad con código existente que pueda usarlo
   Stream<List<Sensor>> getSensorData() {
     final random = Random();
@@ -87,16 +108,6 @@ class SensorService {
         Sensor(
           type: SensorType.humidity,
           value: 40 + random.nextDouble() * 20,
-          timestamp: now,
-        ),
-        Sensor(
-          type: SensorType.light,
-          value: 500 + random.nextDouble() * 500,
-          timestamp: now,
-        ),
-        Sensor(
-          type: SensorType.co2,
-          value: 350 + random.nextDouble() * 100,
           timestamp: now,
         ),
       ];

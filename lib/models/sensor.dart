@@ -8,6 +8,7 @@ class Sensor {
   double maxValue;
   double minValue;
   final String? deviceId; // ID del dispositivo al que pertenece
+  bool actionIsActive; // Estado activo/inactivo para acciones del sensor
 
   Sensor({
     this.id,
@@ -16,6 +17,7 @@ class Sensor {
     this.maxValue = 100.0,
     this.minValue = 0.0,
     this.deviceId,
+    this.actionIsActive = false,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now();
 
@@ -64,6 +66,7 @@ class Sensor {
       minValue: (json['minValue'] as num?)?.toDouble() ?? 0.0,
       maxValue: (json['maxValue'] as num?)?.toDouble() ?? 100.0,
       deviceId: json['deviceId'] as String?,
+      actionIsActive: json['actionIsActive'] as bool? ?? false,
       timestamp: DateTime.fromMillisecondsSinceEpoch(
         ((json['timestamp'] ?? 0) as int) * 1000,
       ),
@@ -77,6 +80,7 @@ class Sensor {
         'minValue': minValue,
         'maxValue': maxValue,
         if (deviceId != null) 'deviceId': deviceId,
+        'actionIsActive': actionIsActive,
         'timestamp': timestamp.millisecondsSinceEpoch ~/ 1000,
       };
 
