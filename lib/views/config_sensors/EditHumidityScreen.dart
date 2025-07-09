@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import '../../viewmodels/device_viewmodel.dart';
 import '../../models/sensor.dart';
 
@@ -15,14 +17,17 @@ class EditHumidityScreen extends StatefulWidget {
 class _EditHumidityScreenState extends State<EditHumidityScreen> {
   late double minValue;
   late double maxValue;
+  late final DatabaseReference _sensorRef;
 
   @override
   void initState() {
     super.initState();
+    // 1) Cargo los valores iniciales desde el ViewModel
     final device = Provider.of<DevicesViewModel>(
       context,
       listen: false,
     ).getDeviceById(widget.deviceId);
+
     final sensor = device?.sensors.firstWhere(
       (s) => s.type == SensorType.humidity,
       orElse: () => Sensor(
@@ -35,6 +40,10 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
 
     minValue = sensor?.minValue ?? 0;
     maxValue = sensor?.maxValue ?? 100;
+
+    // 2) Apunto al nodo de humedad en Firebase
+    final sensorId = '${widget.deviceId}_${SensorType.humidity.name}';
+    _sensorRef = FirebaseDatabase.instance.ref('sensors/$sensorId');
   }
 
   @override
@@ -64,7 +73,8 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.water_drop_outlined, size: 80, color: Colors.white),
+                const Icon(Icons.water_drop_outlined,
+                    size: 80, color: Colors.white),
                 const SizedBox(height: 16),
                 const Text(
                   'Configuración de Humedad',
@@ -85,7 +95,6 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -98,46 +107,67 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
                         initialValue: minValue.toString(),
                         hint: 'Humedad Mínima',
                         icon: Icons.arrow_downward,
-                        onChanged: (val) => minValue = double.tryParse(val) ?? minValue,
+                        onChanged: (val) =>
+                            minValue = double.tryParse(val) ?? minValue,
                       ),
                       const SizedBox(height: 16),
                       _buildInputField(
                         initialValue: maxValue.toString(),
                         hint: 'Humedad Máxima',
                         icon: Icons.arrow_upward,
-                        onChanged: (val) => maxValue = double.tryParse(val) ?? maxValue,
+                        onChanged: (val) =>
+                            maxValue = double.tryParse(val) ?? maxValue,
                       ),
                       const SizedBox(height: 32),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade700,
-                          padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 64, vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),
                           ),
                         ),
-                        onPressed: () {
-                          final vm = Provider.of<DevicesViewModel>(
-                            context,
-                            listen: false,
-                          );
-                          vm.updateSensorLimits(
-                            widget.deviceId,
-                            SensorType.humidity,
-                            minValue,
-                            maxValue,
-                          );
-                          
-                          // Mostrar mensaje de éxito
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Configuración de humedad actualizada'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                          
-                          Navigator.pop(context);
+                        onPressed: () async {
+                          // Escribo en Firebase y luego actualizo el ViewModel
+                          try {
+                            // 1) Update en Realtime Database
+                            await _sensorRef.update({
+                              'minValue': minValue,
+                              'maxValue': maxValue,
+                            });
+
+                            // 2) Actualizo también en el VM para mantener UI coherente
+                            final vm = Provider.of<DevicesViewModel>(
+                              context,
+                              listen: false,
+                            );
+                            await vm.updateSensorLimits(
+                              widget.deviceId,
+                              SensorType.humidity,
+                              minValue,
+                              maxValue,
+                            );
+
+                            // 3) Confirmación
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Configuración de humedad actualizada',
+                                ),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error al guardar: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         child: const Text(
                           'Guardar Cambios',
@@ -174,7 +204,8 @@ class _EditHumidityScreenState extends State<EditHumidityScreen> {
         fillColor: Colors.white,
         hintText: hint,
         prefixIcon: Icon(icon, color: Colors.green.shade700),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
