@@ -6,6 +6,8 @@ import '../../viewmodels/statistics_viewmodel.dart';
 import '../../models/statistic.dart';
 import '../../models/sensor.dart';
 import '../../core/routes/navigation_helper.dart';
+import '../widgets/profile_app_bar_action.dart';
+
 
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
@@ -17,6 +19,18 @@ class StatisticsScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
+        appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Estadísticas',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        actions: const [ProfileAppBarAction()],
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -26,6 +40,7 @@ class StatisticsScreen extends StatelessWidget {
             ),
           ),
           child: SafeArea(
+            // Eliminado el SafeArea extra; la AppBar ya cuida el área superior
             child: Consumer<StatisticsViewModel>(
               builder: (context, vm, child) {
                 final stats = vm.statistics;
@@ -37,28 +52,7 @@ class StatisticsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Header
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => NavigationHelper.goBack(context),
-                            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
-                          ),
-                          const SizedBox(width: 8),
-                          const Expanded(
-                            child: Text(
-                              'Estadísticas',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const Icon(Icons.bar_chart, color: Colors.white, size: 28),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 8), // Pequeño espacio tras la AppBar
 
                       // Dispositivo selector
                       Container(
@@ -76,10 +70,12 @@ class StatisticsScreen extends StatelessWidget {
                             items: vm.deviceIds
                                 .map((d) => DropdownMenuItem(
                                       value: d,
-                                      child: Text(d.toUpperCase(),
-                                          style: const TextStyle(
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w600)),
+                                      child: Text(
+                                        d.toUpperCase(),
+                                        style: const TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600),
+                                      ),
                                     ))
                                 .toList(),
                             onChanged: (d) => d != null ? vm.selectDevice(d) : null,
@@ -88,7 +84,7 @@ class StatisticsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      // Granularidad carrusel
+                      // Granularidad carrusel horizontal
                       SizedBox(
                         height: 48,
                         child: SingleChildScrollView(
@@ -163,7 +159,7 @@ class StatisticsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // Datos o carga
+                      // Datos o indicador de carga
                       hasData
                           ? Expanded(
                               child: ListView(
@@ -229,11 +225,13 @@ class StatisticsScreen extends StatelessWidget {
                                                             .millisecondsSinceEpoch
                                                             .toDouble(),
                                                         s.meanValue))
+                                                    .toList()
+                                                    .take(1000) // opcional: limita 1000 puntos
                                                     .toList(),
                                                 isCurved: true,
                                                 dotData: FlDotData(show: false),
                                                 color: Colors.green.shade800,
-                                                barWidth: 3,
+                                                barWidth: 1,
                                               ),
                                             ],
                                           ),
