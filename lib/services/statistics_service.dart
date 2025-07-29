@@ -10,21 +10,36 @@ class StatisticsService {
     required SensorType sensorType,
     required Granularity granularity,
   }) {
-    final path = 'statistics'
-        '/$deviceId'
-        '/sensors'
+    final path = 'device_stats'
         '/${deviceId}_${sensorType.name}'
         '/${granularity.pathSegment}';
 
     return _db.ref(path).onValue.map((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      final raw = event.snapshot.value as Map<dynamic, dynamic>?;
 
-      if (data == null) return <Statistic>[];
+      if (raw == null) return <Statistic>[];
 
-      return data.entries
-        .map((e) => Statistic.fromJson(e.key as String, e.value))
-        .toList()
-          ..sort((a, b) => a.periodStart.compareTo(b.periodStart));
+      final List<Statistic> stats = [];
+
+      raw.forEach((key, val) {
+        if (val is Map) {
+          // Si este nodo ya es la estadística (daily, monthly, yearly)
+          if (val.containsKey('min')) {
+            stats.add(Statistic.fromMap(val));
+          } else {
+            // Sino, es un agrupador (p.ej 5min u hourly)
+            // y hay un nivel extra de nodos
+            (val as Map<dynamic, dynamic>).forEach((_, subVal) {
+              if (subVal is Map && subVal.containsKey('min')) {
+                stats.add(Statistic.fromMap(subVal));
+              }
+            });
+          }
+        }
+      });
+
+      stats.sort((a, b) => a.periodStart.compareTo(b.periodStart));
+      return stats;
     });
   }
 }
