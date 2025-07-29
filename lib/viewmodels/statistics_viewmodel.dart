@@ -12,11 +12,13 @@ class StatisticsViewModel extends ChangeNotifier {
     SensorType.temperature,
     SensorType.humidity,
   ];
-  
   SensorType selectedSensor = SensorType.humidity;
 
   final List<Granularity> granularities = Granularity.values;
   Granularity selectedGranularity = Granularity.hourly;
+
+  bool isCustom = false;
+  DateTimeRange? customRange;
 
   StreamSubscription<List<Statistic>>? _sub;
   List<Statistic> statistics = [];
@@ -41,18 +43,46 @@ class StatisticsViewModel extends ChangeNotifier {
 
   void selectDevice(String dev) {
     selectedDevice = dev;
+    isCustom = false;
+    customRange = null;
     _listen();
     notifyListeners();
   }
 
   void selectSensor(SensorType type) {
     selectedSensor = type;
+    isCustom = false;
+    customRange = null;
     _listen();
     notifyListeners();
   }
 
   void selectGranularity(Granularity g) {
     selectedGranularity = g;
+    isCustom = false;
+    customRange = null;
+    _listen();
+    notifyListeners();
+  }
+
+  void selectCustomRange(DateTimeRange range) {
+    customRange = range;
+    isCustom = true;
+
+    final diff = range.end.difference(range.start);
+
+    if (diff <= const Duration(hours: 1)) {
+      selectedGranularity = Granularity.fiveMinutes;
+    } else if (diff <= const Duration(days: 1)) {
+      selectedGranularity = Granularity.hourly;
+    } else if (diff <= const Duration(days: 7)) {
+      selectedGranularity = Granularity.daily;
+    } else if (diff <= const Duration(days: 30)) {
+      selectedGranularity = Granularity.weekly;
+    } else {
+      selectedGranularity = Granularity.yearly;
+    }
+
     _listen();
     notifyListeners();
   }

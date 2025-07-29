@@ -23,12 +23,9 @@ class StatisticsService {
 
       raw.forEach((key, val) {
         if (val is Map) {
-          // Si este nodo ya es la estadística (daily, monthly, yearly)
           if (val.containsKey('min')) {
             stats.add(Statistic.fromMap(val));
           } else {
-            // Sino, es un agrupador (p.ej 5min u hourly)
-            // y hay un nivel extra de nodos
             (val as Map<dynamic, dynamic>).forEach((_, subVal) {
               if (subVal is Map && subVal.containsKey('min')) {
                 stats.add(Statistic.fromMap(subVal));

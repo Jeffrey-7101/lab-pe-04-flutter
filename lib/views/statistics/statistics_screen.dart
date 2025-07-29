@@ -8,7 +8,6 @@ import '../../models/sensor.dart';
 import '../../core/routes/navigation_helper.dart';
 import '../widgets/profile_app_bar_action.dart';
 
-
 class StatisticsScreen extends StatelessWidget {
   const StatisticsScreen({super.key});
 
@@ -20,17 +19,16 @@ class StatisticsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Estadísticas',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            'Estadísticas',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          actions: const [ProfileAppBarAction()],
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
-        actions: const [ProfileAppBarAction()],
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -40,7 +38,6 @@ class StatisticsScreen extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            // Eliminado el SafeArea extra; la AppBar ya cuida el área superior
             child: Consumer<StatisticsViewModel>(
               builder: (context, vm, child) {
                 final stats = vm.statistics;
@@ -52,9 +49,8 @@ class StatisticsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 8), // Pequeño espacio tras la AppBar
+                      const SizedBox(height: 8),
 
-                      // Dispositivo selector
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.9),
@@ -67,44 +63,99 @@ class StatisticsScreen extends StatelessWidget {
                             isExpanded: true,
                             dropdownColor: Colors.white,
                             icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
-                            items: vm.deviceIds
-                                .map((d) => DropdownMenuItem(
-                                      value: d,
-                                      child: Text(
-                                        d.toUpperCase(),
-                                        style: const TextStyle(
-                                            color: Colors.black87,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ))
-                                .toList(),
+                            items: vm.deviceIds.map((d) => DropdownMenuItem(
+                                  value: d,
+                                  child: Text(
+                                    d.toUpperCase(),
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                )).toList(),
                             onChanged: (d) => d != null ? vm.selectDevice(d) : null,
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // Granularidad carrusel horizontal
                       SizedBox(
                         height: 48,
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: vm.granularities.map((g) {
-                              final sel = vm.selectedGranularity == g;
-                              return Padding(
+                            children: [
+                              ...vm.granularities.map((g) {
+                                final sel = vm.selectedGranularity == g && !vm.isCustom;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: SizedBox(
+                                    width: 80,
+                                    child: ElevatedButton(
+                                      onPressed: () => vm.selectGranularity(g),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: sel
+                                            ? Colors.white
+                                            : Colors.white.withOpacity(0.3),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                          side: BorderSide(
+                                            color: sel
+                                                ? Colors.green
+                                                : Colors.green.withOpacity(0.5),
+                                          ),
+                                        ),
+                                        elevation: 0,
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                      ),
+                                      child: Text(
+                                        g.label,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: sel
+                                              ? Colors.green.shade800
+                                              : Colors.white,
+                                          fontSize: 14,
+                                          fontWeight:
+                                              sel ? FontWeight.bold : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+
+                              Padding(
                                 padding: const EdgeInsets.only(right: 12),
                                 child: SizedBox(
-                                  width: 80,
+                                  width: 100,
                                   child: ElevatedButton(
-                                    onPressed: () => vm.selectGranularity(g),
+                                    onPressed: () async {
+                                      final range = await showDateRangePicker(
+                                        context: context,
+                                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                                        lastDate: DateTime.now(),
+                                        builder: (ctx, child) => Theme(
+                                          data: Theme.of(ctx).copyWith(
+                                            colorScheme: ColorScheme.light(
+                                              primary: Colors.green.shade700,
+                                            ),
+                                          ),
+                                          child: child!,
+                                        ),
+                                      );
+                                      if (range != null) {
+                                        vm.selectCustomRange(range);
+                                      }
+                                    },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          sel ? Colors.white : Colors.white.withOpacity(0.3),
+                                      backgroundColor: vm.isCustom
+                                          ? Colors.white
+                                          : Colors.white.withOpacity(0.3),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20),
                                         side: BorderSide(
-                                          color: sel
+                                          color: vm.isCustom
                                               ? Colors.green
                                               : Colors.green.withOpacity(0.5),
                                         ),
@@ -113,24 +164,36 @@ class StatisticsScreen extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(vertical: 8),
                                     ),
                                     child: Text(
-                                      g.label,
+                                      'Personalizado',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: sel ? Colors.green.shade800 : Colors.white,
+                                        color: vm.isCustom
+                                            ? Colors.green.shade800
+                                            : Colors.white,
                                         fontSize: 14,
-                                        fontWeight: sel ? FontWeight.bold : FontWeight.w500,
+                                        fontWeight: vm.isCustom
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
                                       ),
                                     ),
                                   ),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
 
-                      // Switch sensor
+                      if (vm.isCustom && vm.customRange != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: Text(
+                            'Desde: ${vm.customRange!.start}\nHasta: ${vm.customRange!.end}',
+                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                        ),
+
                       Container(
                         alignment: Alignment.center,
                         child: Row(
@@ -159,12 +222,10 @@ class StatisticsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // Datos o indicador de carga
                       hasData
                           ? Expanded(
                               child: ListView(
                                 children: [
-                                  // Grid de 4 tarjetas
                                   GridView.count(
                                     crossAxisCount: 2,
                                     crossAxisSpacing: 12,
@@ -202,7 +263,6 @@ class StatisticsScreen extends StatelessWidget {
 
                                   const SizedBox(height: 24),
 
-                                  // Línea de tendencia
                                   Card(
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20)),
@@ -225,8 +285,7 @@ class StatisticsScreen extends StatelessWidget {
                                                             .millisecondsSinceEpoch
                                                             .toDouble(),
                                                         s.meanValue))
-                                                    .toList()
-                                                    .take(1000) // opcional: limita 1000 puntos
+                                                    .take(1000)
                                                     .toList(),
                                                 isCurved: true,
                                                 dotData: FlDotData(show: false),
@@ -246,8 +305,7 @@ class StatisticsScreen extends StatelessWidget {
                               child: Center(
                                   child: Text('Cargando datos...',
                                       style: TextStyle(
-                                          color: Colors.white70, fontSize: 16))),
-                            ),
+                                          color: Colors.white70, fontSize: 16)))),
                     ],
                   ),
                 );
@@ -260,7 +318,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 }
 
-/// Tarjeta genérica para mostrar un valor estadístico
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
