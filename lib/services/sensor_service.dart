@@ -6,7 +6,6 @@ import '../models/sensor.dart';
 class SensorService {
   static final _database = FirebaseDatabase.instance;
   
-  /// Obtiene un sensor específico por su ID fijo
   static Future<Sensor?> getSensorById(String sensorId) async {
     try {
       final snapshot = await _database.ref('sensors/$sensorId').get();
@@ -21,7 +20,6 @@ class SensorService {
     }
   }
   
-  /// Obtiene todos los sensores de un dispositivo específico
   static Stream<List<Sensor>> getSensorsForDevice(String deviceId) {
     return _database.ref('sensors').onValue.map((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
@@ -40,7 +38,6 @@ class SensorService {
     });
   }
   
-  /// Obtiene un sensor específico de un dispositivo y tipo
   static Stream<Sensor?> getSensorStream(String deviceId, SensorType sensorType) {
     final sensorId = '${deviceId}_${sensorType.name}';
     return _database.ref('sensors/$sensorId').onValue.map((event) {

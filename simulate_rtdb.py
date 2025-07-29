@@ -28,13 +28,7 @@ SENSORS = {
         "unit": "%",
     },
 }
-
-<<<<<<< HEAD
 SEND_EVERY_S = 5
-=======
-SEND_EVERY_S = 2  # intervalo en segundos para cada sensor
->>>>>>> 6cd6feed0c2e27cbd36085e7d0a6a64025588ef7
-
 def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 

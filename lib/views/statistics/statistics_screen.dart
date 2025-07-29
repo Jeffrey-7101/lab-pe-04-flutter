@@ -1,155 +1,337 @@
 import 'package:flutter/material.dart';
-import '../../core/routes/navigation_helper.dart';
-import '../widgets/profile_app_bar_action.dart';
+import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
+
+import '../../viewmodels/statistics_viewmodel.dart';
+import '../../models/statistic.dart';
 import '../../models/sensor.dart';
+import '../../core/routes/navigation_helper.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
-
-  static const _metrics = [
-    _Metric(label: 'Temp. Actual', value: '24°C', icon: Icons.thermostat_outlined, type: SensorType.temperature),
-    _Metric(label: 'Humedad', value: '65%', icon: Icons.water_drop_outlined, type: SensorType.humidity),
-    _Metric(label: 'Luz', value: '750 lx', icon: Icons.wb_sunny_outlined, type: SensorType.light),
-    _Metric(label: 'CO₂', value: '400 ppm', icon: Icons.cloud_outlined, type: SensorType.co2),
-  ];
+class StatisticsScreen extends StatelessWidget {
+  const StatisticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Estadísticas'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          const ProfileAppBarAction(),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                NavigationHelper.toSensorChart(
-                  context,
-                  sensorType: SensorType.temperature,
-                  deviceId: 'device1', // Debe usarse un id real
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.green.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
+    return ChangeNotifierProvider(
+      create: (_) => StatisticsViewModel(),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: Consumer<StatisticsViewModel>(
+              builder: (context, vm, child) {
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        '📈 Gráfico de Temperatura',
-                        style: TextStyle(fontSize: 18),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () =>
+                                NavigationHelper.goBack(context),
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white, size: 28),
+                          ),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'Estadísticas',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const Icon(Icons.bar_chart,
+                              color: Colors.white, size: 28),
+                        ],
                       ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Toca para ver en tiempo real',
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                      const SizedBox(height: 20),
+
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: vm.selectedDevice,
+                            isExpanded: true,
+                            dropdownColor: Colors.white,
+                            icon: const Icon(Icons.keyboard_arrow_down,
+                                color: Colors.black54),
+                            items: vm.deviceIds
+                                .map((d) => DropdownMenuItem(
+                                      value: d,
+                                      child: Text(
+                                        d.toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: (d) {
+                              if (d != null) vm.selectDevice(d);
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        height: 48,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: vm.granularities.map((g) {
+                              final isSelected =
+                                  vm.selectedGranularity == g;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 12),
+                                child: SizedBox(
+                                  width: 80,
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        vm.selectGranularity(g),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: isSelected
+                                          ? Colors.white
+                                          : Colors.white.withOpacity(0.3),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20),
+                                        side: BorderSide(
+                                          color: isSelected
+                                              ? Colors.green
+                                              : Colors.green.withOpacity(0.5),
+                                        ),
+                                      ),
+                                      elevation: 0,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                    ),
+                                    child: Text(
+                                      g.label,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.green.shade800
+                                            : Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      Container(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Humedad',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                            const SizedBox(width: 8),
+                            Transform.scale(
+                              scale: 1.1,
+                              child: Switch(
+                                value: vm.selectedSensor ==
+                                    SensorType.temperature,
+                                onChanged: (v) {
+                                  vm.selectSensor(v
+                                      ? SensorType.temperature
+                                      : SensorType.humidity);
+                                },
+                                activeColor: Colors.white,
+                                activeTrackColor: Colors.white54,
+                                inactiveThumbColor: Colors.white,
+                                inactiveTrackColor: Colors.white54,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('Temperatura',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      Expanded(
+                        child: vm.statistics.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'Cargando datos...',
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 16),
+                                ),
+                              )
+                            : ListView(
+                                children: [
+                                  // Tarjeta último registro
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    color: Colors.white.withOpacity(0.9),
+                                    margin:
+                                        const EdgeInsets.only(bottom: 20),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Último periodo: ${vm.statistics.last.periodStart}',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Text(
+                                            'Min: ${vm.statistics.last.minValue}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          Text(
+                                            'Max: ${vm.statistics.last.maxValue}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          Text(
+                                            'Mean: ${vm.statistics.last.meanValue}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                          Text(
+                                            'Count: ${vm.statistics.last.countValue}',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  // LineChart meanValue
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    color: Colors.white.withOpacity(0.9),
+                                    margin:
+                                        const EdgeInsets.only(bottom: 20),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: SizedBox(
+                                        height: 180,
+                                        child: LineChart(
+                                          LineChartData(
+                                            gridData:
+                                                FlGridData(show: false),
+                                            titlesData:
+                                                FlTitlesData(show: false),
+                                            borderData:
+                                                FlBorderData(show: false),
+                                            lineBarsData: [
+                                              LineChartBarData(
+                                                spots: vm.statistics
+                                                    .map((s) =>
+                                                        FlSpot(
+                                                            s.periodStart
+                                                                .millisecondsSinceEpoch
+                                                                .toDouble(),
+                                                            s.meanValue))
+                                                    .toList(),
+                                                isCurved: true,
+                                                dotData:
+                                                    FlDotData(show: false),
+                                                color:
+                                                    Colors.green.shade800,
+                                                barWidth: 3,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // BarChart countValue
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    color: Colors.white.withOpacity(0.9),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: SizedBox(
+                                        height: 180,
+                                        child: BarChart(
+                                          BarChartData(
+                                            gridData:
+                                                FlGridData(show: false),
+                                            titlesData:
+                                                FlTitlesData(show: false),
+                                            borderData:
+                                                FlBorderData(show: false),
+                                            barGroups: vm.statistics
+                                                .asMap()
+                                                .entries
+                                                .map((e) {
+                                              return BarChartGroupData(
+                                                x: e.key,
+                                                barRods: [
+                                                  BarChartRodData(
+                                                    toY: e.value.countValue,
+                                                    color: Colors
+                                                        .green.shade800,
+                                                    width: 14,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                  ),
+                                                ],
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                       ),
                     ],
                   ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _metrics.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.2,
-              ),
-              itemBuilder: (context, i) {
-                final m = _metrics[i];
-                return _MetricCard(metric: m);
+                );
               },
             ),
-          ],
-        ),
-      ),
-      // Ya no necesitamos la barra de navegación inferior aquí
-    );
-  }
-}
-
-class _Metric {
-  final String label;
-  final String value;
-  final IconData icon;
-  final SensorType type;
-  const _Metric({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.type,
-  });
-}
-
-class _MetricCard extends StatelessWidget {
-  final _Metric metric;
-  const _MetricCard({required this.metric});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      // onTap: () {        Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (_) => SensorChartScreen(
-      //         sensorType: metric.type,
-      //       ),
-      //     ),
-      //   );
-      // },
-      child: Card(
-        // color: Colors.white.withOpacity(0.9),
-        color: Colors.white.withValues(
-          red: 255,
-          green: 255,
-          blue: 255,
-          alpha: 230,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(metric.icon, size: 20, color: Colors.green.shade700),
-              Text(
-                metric.value,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(metric.label),
-              const SizedBox(height: 4),
-              const Text(
-                'Toca para ver en tiempo real',
-                style: TextStyle(fontSize: 10, color: Colors.black54),
-              ),
-            ],
           ),
         ),
       ),

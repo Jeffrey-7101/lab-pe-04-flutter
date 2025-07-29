@@ -12,58 +12,82 @@ class DevicesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<DevicesViewModel>();
     final devices = vm.devices;
+    final primaryGreen = const Color(0xFF56ab2f);
+    final secondaryGreen = const Color(0xFFa8e063);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Dispositivos'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        actions: [
-          const ProfileAppBarAction(),
-        ],
+        title: const Text(
+          'Dispositivos',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        actions: const [ProfileAppBarAction()],
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: devices.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: devices.length,
-              itemBuilder: (context, i) {
-                final d = devices[i];
-                return InkWell(
-                  borderRadius: BorderRadius.circular(16),                  onTap: () {
-                    NavigationHelper.toMonitoring(context, d.id);
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [secondaryGreen, primaryGreen],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: devices.isEmpty
+              ? const Center(child: CircularProgressIndicator(color: Colors.white))
+              : ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: devices.length,
+                  itemBuilder: (context, i) {
+                    final d = devices[i];
+                    final onlineColor = d.isOnline ? primaryGreen : Colors.red.shade700;
+
+                    return InkWell(
                       borderRadius: BorderRadius.circular(16),
-                    ),
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      leading: Icon(
-                        d.icon,
-                        color: d.isOnline ? Colors.green.shade700 : Colors.red.shade700,
-                        size: 32,
-                      ),
-                      title: Text(
-                        d.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text('Última actualización: ${d.lastSeen}'),
-                      trailing: Text(
-                        d.isOnline ? 'En línea' : 'Desconectado',
-                        style: TextStyle(
-                          color: d.isOnline ? Colors.green.shade700 : Colors.red.shade700,
-                          fontWeight: FontWeight.w600,
+                      onTap: () => NavigationHelper.toMonitoring(context, d.id),
+                      child: Card(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: Icon(
+                            d.icon,
+                            color: onlineColor,
+                            size: 32,
+                          ),
+                          title: Text(
+                            d.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: primaryGreen,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Última actualización: ${d.lastSeen}',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
+                          trailing: Text(
+                            d.isOnline ? 'En línea' : 'Desconectado',
+                            style: TextStyle(
+                              color: onlineColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+        ),
+      ),
     );
   }
 }

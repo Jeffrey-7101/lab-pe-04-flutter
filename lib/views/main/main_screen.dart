@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   // Lista de pantallas para cada tab
   static const List<Widget> _screens = [
     DevicesScreen(),
-    DashboardScreen(),
+    StatisticsScreen(),
     NotificationsScreen(),
   ];
 

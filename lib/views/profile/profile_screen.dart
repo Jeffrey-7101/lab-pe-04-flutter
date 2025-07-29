@@ -12,111 +12,47 @@ class ProfileScreen extends StatelessWidget {
     final loginVM = Provider.of<LoginViewModel>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      body: Stack(
+        children: [
+          const _BackgroundGradient(),
+          SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Avatar de usuario
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: user?.photoURL != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            user!.photoURL!,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : Icon(Icons.person, size: 60, color: Colors.green.shade700),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: ProfileHeader(user: user),
                 ),
-                const SizedBox(height: 16),
-                const Text('Bienvenido,',
-                  style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 20,
-                  )),
-                const SizedBox(height: 8),
 
-                Text(
-                  user?.displayName?.isNotEmpty == true 
-                    ? user!.displayName! 
-                    : user?.email ?? 'Usuario',
-                  style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-
-                _InfoCard(
-                  icon: Icons.email,
-                  label: 'Email', 
-                  value: user?.email ?? 'No disponible'
-                ),
-                const SizedBox(height: 16),
-                _InfoCard(
-                  icon: Icons.perm_identity,
-                  label: 'UID',   
-                  value: user?.uid ?? 'No disponible'
-                ),
-                if (user?.phoneNumber != null) ...[
-                  const SizedBox(height: 16),
-                  _InfoCard(
-                    icon: Icons.phone,
-                    label: 'Teléfono', 
-                    value: user!.phoneNumber!
-                  ),
-                ],
-                
-                const Spacer(),
-                
-                // Botón de cerrar sesión
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.logout),
-                  label: const Text('Cerrar Sesión'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.red.shade700,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: ListView.separated(
+                      itemCount: _ProfileField.values.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 16),
+                      itemBuilder: (context, idx) {
+                        final field = _ProfileField.values[idx];
+                        final value = field.getValue(user);
+                        return InfoCard(
+                          icon: field.icon,
+                          label: field.label,
+                          value: value,
+                        );
+                      },
                     ),
-                  ),                  onPressed: () async {
-                    // Mostrar diálogo de confirmación
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24, vertical: 16),
+                  child: LogoutButton(onLogout: () async {
                     final confirm = await showDialog<bool>(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      builder: (_) => AlertDialog(
                         title: const Text('Cerrar Sesión'),
-                        content: const Text('¿Estás seguro que deseas cerrar sesión?'),
+                        content:
+                            const Text('¿Estás seguro que deseas cerrar sesión?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context, false),
@@ -132,39 +68,117 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     );
-                    
                     if (confirm == true) {
                       await loginVM.logout();
                       if (context.mounted) {
-                        // Limpiar completamente la pila de navegación y ir al login
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/login', 
-                          (route) => false // Esto elimina todas las rutas anteriores
-                        );
+                        Navigator.of(context)
+                            .pushNamedAndRemoveUntil('/login', (_) => false);
                       }
                     }
-                  },
+                  }),
                 ),
-                
-                const SizedBox(height: 16),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BackgroundGradient extends StatelessWidget {
+  const _BackgroundGradient();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFa8e063), Color(0xFF56ab2f)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
     );
   }
 }
 
-class _InfoCard extends StatelessWidget {
+class ProfileHeader extends StatelessWidget {
+  final User? user;
+  const ProfileHeader({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final displayName = user?.displayName?.isNotEmpty == true
+        ? user!.displayName!
+        : user?.email ?? 'Usuario';
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundColor: Colors.white,
+          child: user?.photoURL != null
+              ? ClipOval(
+                  child: Image.network(
+                    user!.photoURL!,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : Icon(Icons.person, size: 60, color: Colors.green.shade700),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Bienvenido,',
+          style: TextStyle(color: Colors.white70, fontSize: 18),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          displayName,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+enum _ProfileField {
+  email(Icons.email, 'Email'),
+  uid(Icons.perm_identity, 'UID'),
+  phone(Icons.phone, 'Teléfono');
+
+  final IconData icon;
+  final String label;
+  const _ProfileField(this.icon, this.label);
+
+  String getValue(User? user) {
+    switch (this) {
+      case _ProfileField.email:
+        return user?.email ?? 'No disponible';
+      case _ProfileField.uid:
+        return user?.uid ?? 'No disponible';
+      case _ProfileField.phone:
+        return user?.phoneNumber ?? 'No disponible';
+    }
+  }
+}
+
+class InfoCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  
-  const _InfoCard({
+
+  const InfoCard({
     required this.icon,
-    required this.label, 
-    required this.value
+    required this.label,
+    required this.value,
   });
 
   @override
@@ -172,6 +186,7 @@ class _InfoCard extends StatelessWidget {
     return Card(
       color: Colors.white.withOpacity(0.9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         child: Row(
@@ -189,14 +204,32 @@ class _InfoCard extends StatelessWidget {
             Expanded(
               child: Text(
                 value,
-                style: const TextStyle(
-                  color: Colors.black87,
-                ),
+                style: const TextStyle(color: Colors.black87),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class LogoutButton extends StatelessWidget {
+  final Future<void> Function() onLogout;
+  const LogoutButton({required this.onLogout});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.logout),
+      label: const Text('Cerrar Sesión'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.red.shade700,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      onPressed: onLogout,
     );
   }
 }

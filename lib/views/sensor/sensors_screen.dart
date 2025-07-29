@@ -176,7 +176,7 @@ class SensorsScreen extends StatelessWidget {
             case 1:
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                MaterialPageRoute(builder: (_) => const StatisticsScreen()),
               );
               break;
             case 2:
