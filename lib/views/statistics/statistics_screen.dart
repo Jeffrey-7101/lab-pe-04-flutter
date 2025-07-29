@@ -288,7 +288,7 @@ class StatisticsScreen extends StatelessWidget {
                                                     .take(1000)
                                                     .toList(),
                                                 isCurved: true,
-                                                dotData: FlDotData(show: false),
+                                                dotData: FlDotData(show: true),
                                                 color: Colors.green.shade800,
                                                 barWidth: 1,
                                               ),
