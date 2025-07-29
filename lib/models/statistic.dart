@@ -4,7 +4,7 @@ extension GranularityExtension on Granularity {
   String get label {
     switch (this) {
       case Granularity.fiveMinutes:
-        return '5 min';
+        return '15 min';
       case Granularity.hourly:
         return 'Hora';
       case Granularity.daily:

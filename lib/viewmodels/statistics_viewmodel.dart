@@ -16,7 +16,6 @@ class StatisticsViewModel extends ChangeNotifier {
 
   final List<Granularity> granularities = Granularity.values;
   Granularity selectedGranularity = Granularity.hourly;
-
   bool isCustom = false;
   DateTimeRange? customRange;
 
@@ -33,8 +32,41 @@ class StatisticsViewModel extends ChangeNotifier {
       deviceId: selectedDevice,
       sensorType: selectedSensor,
       granularity: selectedGranularity,
-    ).listen((list) {
-      statistics = list;
+    ).listen((allStats) {
+      final now = DateTime.now();
+      DateTime start;
+      DateTime end;
+
+      if (isCustom && customRange != null) {
+        start = customRange!.start;
+        end = customRange!.end;
+      } else {
+        end = now;
+        switch (selectedGranularity) {
+          case Granularity.fiveMinutes:
+            start = now.subtract(const Duration(minutes: 15));
+            break;
+          case Granularity.hourly:
+            start = now.subtract(const Duration(hours: 1));
+            break;
+          case Granularity.daily:
+            start = now.subtract(const Duration(days: 1));
+            break;
+          case Granularity.weekly:
+            start = now.subtract(const Duration(days: 7));
+            break;
+          case Granularity.yearly:
+            start = now.subtract(const Duration(days: 365));
+            break;
+        }
+      }
+
+      statistics = allStats.where((s) {
+        final ts = s.periodStart;
+        return ts.isAfter(start) && ts.isBefore(end);
+      }).toList()
+        ..sort((a, b) => a.periodStart.compareTo(b.periodStart));
+
       notifyListeners();
     }, onError: (e) {
       debugPrint('Error estadísticas: $e');
@@ -68,7 +100,6 @@ class StatisticsViewModel extends ChangeNotifier {
   void selectCustomRange(DateTimeRange range) {
     customRange = range;
     isCustom = true;
-
     final diff = range.end.difference(range.start);
 
     if (diff <= const Duration(hours: 1)) {
