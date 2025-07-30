@@ -47,16 +47,16 @@ class StatisticsViewModel extends ChangeNotifier {
             start = now.subtract(const Duration(minutes: 15));
             break;
           case Granularity.hourly:
-            start = now.subtract(const Duration(hours: 1));
+            start = now.subtract(const Duration(hours: 24));
             break;
           case Granularity.daily:
-            start = now.subtract(const Duration(days: 1));
-            break;
-          case Granularity.weekly:
             start = now.subtract(const Duration(days: 7));
             break;
+          case Granularity.weekly:
+            start = now.subtract(const Duration(days: 28));
+            break;
           case Granularity.yearly:
-            start = now.subtract(const Duration(days: 365));
+            start = now.subtract(const Duration(days: 1095));
             break;
         }
       }
