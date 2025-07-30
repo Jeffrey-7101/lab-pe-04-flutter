@@ -44,7 +44,7 @@ class StatisticsViewModel extends ChangeNotifier {
         end = now;
         switch (selectedGranularity) {
           case Granularity.fiveMinutes:
-            start = now.subtract(const Duration(minutes: 15));
+            start = now.subtract(const Duration(minutes: 1440));
             break;
           case Granularity.hourly:
             start = now.subtract(const Duration(hours: 24));
