@@ -1,30 +1,28 @@
-# Invernadero IoT Flutter App
+# 🌿 Invernadero IoT – Flutter App
 
-Esta aplicación Flutter conecta con Firebase Realtime Database para monitorear dispositivos IoT, visualizar métricas de sensores en tiempo real y gestionar notificaciones.
+Esta aplicación Flutter se conecta con **Firebase Realtime Database** para monitorear un sistema de dispositivos IoT en tiempo real, visualizar métricas ambientales (como temperatura y humedad) y recibir notificaciones automáticas por fuera de rango.
 
-## Descripción
+---
 
-- **Autenticación**: Firebase Auth con vistas de registro y login.
-- **Dispositivos**: Lista de dispositivos con estado, último visto y sensores.
-- **Monitoreo**: Gráficas en tiempo real de temperatura y humedad.
-- **Notificaciones**: Alertas automáticas cuando un sensor sale de rango.
+## ✨ Características
 
-## Requisitos
+- 🔐 **Autenticación con Firebase Auth** (Login/Registro)
+- 📟 **Gestión de Dispositivos IoT**: Estado, sensores, último visto
+- 📊 **Monitoreo en Tiempo Real**: Gráficas de temperatura y humedad
+- 🔔 **Notificaciones Push**: Alertas automáticas al superar umbrales
 
-- Flutter ≥ 3.8.0
-- Android SDK o Xcode instalado
-- Proyecto de Firebase con:
-  - Realtime Database
-  - Authentication habilitada
-  - Clave de servicio JSON descargada (service-account-key.json)
+---
 
-## Configuración
+## 🧱 Arquitectura del Proyecto
 
-1. **Clonar el repositorio**  
+<img width="1565" height="1186" alt="Arquitectura PE" src="https://github.com/user-attachments/assets/7b986d35-1445-4d15-a9a6-9dc6bda26871" />
+
+## ⚙️ CONFIGURACIÓN
+
+1. **Clona el repositorio**
    ```bash
    git clone https://github.com/Jeffrey-7101/lab-pe-04-flutter.git
    cd lab-pe-04-flutter
-   ```
 
 2. **Ignorar el archivo JSON de servicio**  
    Verifica que tu `.gitignore` incluya:
@@ -44,7 +42,7 @@ Esta aplicación Flutter conecta con Firebase Realtime Database para monitorear 
    flutter pub get
    ```
 
-## Ejecución
+## 🚀 EJECUCIÓN
 
 ```bash
 flutter clean
@@ -53,13 +51,14 @@ flutter run
 
 Usa **hot restart** (⇧ R) tras cambios en inicialización de Firebase.
 
-## Cuenta de prueba
+## 🔐 Cuenta de prueba
 
 - Regístrate desde la vista de registro, **o** usa:
   - **Email**: `admin@gmail.com`
   - **Password**: `admin123`
 
+## 👥 Participantes
 
-## Podar notificaciones
-
-La app mantiene sólo las 5 últimas notificaciones automáticamente.  
+- **Huashuayo Sivincha, Josue Daniel**
+- **Kana Condori, Frank Jhonatan**
+- **Pinto Ñaupa, Jeffrey Joan**
