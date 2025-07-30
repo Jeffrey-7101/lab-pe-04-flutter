@@ -31,7 +31,7 @@ Esta aplicación Flutter se conecta con **Firebase Realtime Database** para moni
    ```
 
 3. **Agregar tu JSON de cuenta de servicio**  
-   - Descarga la clave de Service Accounts desde Firebase Console.  
+   - Descarga la clave de Service Accounts desde Firebase Console. (Disponible aquí: https://drive.google.com/drive/folders/19dBn1eZeEuVNURSfUWAjGXnYC3aHlGaN?usp=sharing )  
    - Coloca el archivo `*.json` en la raíz del proyecto.
 
 4. **Verificar `databaseURL`**  

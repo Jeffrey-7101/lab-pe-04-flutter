@@ -10,7 +10,6 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<NotificationsViewModel>();
-    // Tus tonos verde característicos:
     const primaryGreen = Color(0xFF56ab2f);
     const secondaryGreen = Color(0xFFa8e063);
 
@@ -56,7 +55,6 @@ class NotificationsScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          // Icono dentro de círculo semitransparente
                           Container(
                             decoration: BoxDecoration(
                               color: item.iconColor.withOpacity(0.2),
