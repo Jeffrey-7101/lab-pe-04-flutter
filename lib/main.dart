@@ -11,17 +11,37 @@ import 'viewmodels/notifications_viewmodel.dart';
 import 'viewmodels/device_viewmodel.dart';
 import 'repositories/auth_repository.dart';
 import 'services/fcm_service.dart';
+import 'dart:io';
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint('🛑 Notificación en background: ${message.notification?.title}');
 }
 
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+//   try {
+//     await Firebase.initializeApp(
+//       options: DefaultFirebaseOptions.currentPlatform,
+//     );
+//   } on FirebaseException catch (e) {
+//     if (e.code != 'duplicate-app') {
+//       rethrow;
+//     }
+//   }
+
+//   await FCMService.init();
+
+//   runApp(const MyApp());
+// }
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  // Inicializa Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -32,7 +52,11 @@ Future<void> main() async {
     }
   }
 
-  await FCMService.init();
+  // Solo inicializar notificaciones en Android
+  if (Platform.isAndroid) {
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    await FCMService.init();
+  }
 
   runApp(const MyApp());
 }
