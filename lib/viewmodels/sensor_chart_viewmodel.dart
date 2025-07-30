@@ -20,10 +20,13 @@ class SensorChartViewModel extends ChangeNotifier {
     required this.sensorType,
     this.historyWindow = const Duration(seconds: 30),
   }) {
-    // Escuchar el sensor fijo con ID específico
-    final sensorId = '${deviceId}_${sensorType.name}';
-    _sensorRef = FirebaseDatabase.instance
-        .ref('sensors/$sensorId');
+    // Escuchar el sensor con el nuevo formato de path
+    final sensorPath = '/devices/$deviceId/sensors/${sensorType.name}/';
+
+    // log
+    debugPrint('Listening to path: $sensorPath');
+
+    _sensorRef = FirebaseDatabase.instance.ref(sensorPath);
 
     _listen();
   }
@@ -35,6 +38,8 @@ class SensorChartViewModel extends ChangeNotifier {
       if (json != null) {
         final sample = Sensor.fromJson(json);
         currentSensor = sample;
+
+        debugPrint('Sensor updated: ${sample.getFormattedValue()}');
 
         // Agregar al historial para el gráfico
         history.add(sample);
